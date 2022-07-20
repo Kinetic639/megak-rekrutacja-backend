@@ -17,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: cookieExtractor,
       secretOrKey:
-        'nextekeyjioj*(HJ$!)$H!)$H)!$%!&)(*#@IJKNM!QASXCVNM<>LKJHGFDSAQWERTYUIOP{+_)(*&^%$#@!!!!QWERTYUIO)_{::::><M?',
+        'nextekeyjioj*(HJ$!)$H!)$H)!$%!&)(*#@IJKNM!QASXCVNM<>LKJHGFDSAQWERTYUIOP{+_)(*&^%$#@!!!!QWERTYUIO)_{::::><M?ukryć',
     });
   }
 
@@ -25,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!payload || !payload.id) {
       return done(new UnauthorizedException(), false);
     }
-    const user = await User.find({ where: { currentTokenId: payload.id } });
+    const user = await User.findOne({ where: { currentTokenId: payload.id } });
     if (!user) {
       return done(new UnauthorizedException(), false);
     }

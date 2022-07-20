@@ -77,7 +77,6 @@ export class AuthService {
 
   async logout(user: User, res: Response) {
     try {
-      console.log(user.currentTokenId);
       user.currentTokenId = null;
       await user.save();
       res.clearCookie('jwt', {
