@@ -18,4 +18,10 @@ export class User extends BaseEntity {
     default: null,
   })
   currentTokenId: string | null;
+
+  @Column({
+    nullable: true,
+    default: null,
+  })
+  role: string | null;
 }

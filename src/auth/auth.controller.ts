@@ -15,7 +15,7 @@ export class AuthController {
     @Body() req: AuthLoginDto,
     @Res() res: Response,
   ): Promise<any> {
-    return this.authService.login(req, res);
+    return await this.authService.login(req, res);
   }
 
   @Get('/logout')
