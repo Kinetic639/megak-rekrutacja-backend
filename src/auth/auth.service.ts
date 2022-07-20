@@ -46,7 +46,7 @@ export class AuthService {
         pwdHash: hashPwd(req.pwd),
       });
       if (!user) {
-        return res.json({ error: 'Invalid login data' });
+        return res.json({ message: 'Invalid login data' });
       }
       const token = await this.createToken(await this.generateToken(user));
 
@@ -55,10 +55,11 @@ export class AuthService {
           secure: false, //tu ustawiamy true jeśli jest https (czyli na produkcji)
           domain: 'localhost', //tu domenę
           httpOnly: true, //dzięki temu front nie widzi ciastek jwt
+          sameSite: 'lax',
         })
-        .json({ ok: true });
+        .json({ message: 'Success' });
     } catch (e) {
-      return res.json({ error: e.message });
+      return res.json({ message: e.message });
     }
   }
 
