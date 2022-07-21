@@ -85,7 +85,7 @@ export class AuthService {
         domain: 'localhost',
         httpOnly: true,
       });
-      return res.json({ ok: true });
+      return res.json({ message: 'Logout successful' });
     } catch (e) {
       return res.json({ error: e.message });
     }
