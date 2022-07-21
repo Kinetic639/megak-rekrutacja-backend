@@ -1,7 +1,7 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserObj } from '../decorators/user-obj.decorator';
-import { User } from '../auth/auth.entity';
+import { User } from '../user/user.entity';
 import { PanelService } from './panel.service';
 
 @Controller('panel')
@@ -11,6 +11,6 @@ export class PanelController {
   @Get('/admin')
   @UseGuards(AuthGuard('jwt'))
   confirm(@UserObj() user: User) {
-    return `zalogowano jako ${user.role}`;
+    return `zalogowano jako ${user.userType}`;
   }
 }

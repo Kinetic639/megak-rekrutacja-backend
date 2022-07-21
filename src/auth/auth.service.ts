@@ -4,7 +4,7 @@ import { Response } from 'express';
 import { v4 as uuid } from 'uuid';
 import { sign } from 'jsonwebtoken';
 import { JwtPayload } from './jwt.strategy';
-import { User } from './auth.entity';
+import { User } from '../user/user.entity';
 import { hashPwd } from '../utils/hash-pwd';
 
 @Injectable()
@@ -31,9 +31,9 @@ export class AuthService {
     let userWithThisToken = null;
     do {
       token = uuid();
-      userWithThisToken = await User.findOneBy({ currentTokenId: token });
+      userWithThisToken = await User.findOneBy({ token: token });
     } while (!!userWithThisToken);
-    user.currentTokenId = token;
+    user.token = token;
     await user.save();
 
     return token;
@@ -43,7 +43,7 @@ export class AuthService {
     try {
       const user = await User.findOneBy({
         email: req.email,
-        pwdHash: hashPwd(req.pwd),
+        hash: hashPwd(req.pwd),
       });
       if (!user) {
         return res.json({ message: 'Invalid login data' });
@@ -64,21 +64,21 @@ export class AuthService {
   }
 
   filter(user: User): RegisterAuthResponse {
-    const { email, id } = user;
-    return { id, email };
+    const { email, userId } = user;
+    return { userId, email };
   }
 
   async register(newU): Promise<RegisterAuthResponse> {
     const user = new User();
     user.email = newU.email;
-    user.pwdHash = hashPwd(newU.pwd);
+    user.hash = hashPwd(newU.pwd);
     await user.save();
     return this.filter(user);
   }
 
   async logout(user: User, res: Response) {
     try {
-      user.currentTokenId = null;
+      user.token = null;
       await user.save();
       res.clearCookie('jwt', {
         secure: false,

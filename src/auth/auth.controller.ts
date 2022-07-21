@@ -4,7 +4,7 @@ import { Response } from 'express';
 import { AuthLoginDto, RegisterAuthResponse } from './dto/auth-login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UserObj } from '../decorators/user-obj.decorator';
-import { User } from './auth.entity';
+import { User } from '../user/user.entity';
 
 @Controller('auth')
 export class AuthController {

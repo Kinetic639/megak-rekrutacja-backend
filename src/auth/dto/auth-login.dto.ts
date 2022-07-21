@@ -4,6 +4,6 @@ export class AuthLoginDto {
 }
 
 export class RegisterAuthResponse {
-  id: string;
+  userId: string;
   email: string;
 }
