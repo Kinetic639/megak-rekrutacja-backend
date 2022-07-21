@@ -6,22 +6,12 @@ import { UserModule } from './user/user.module';
 import { HrModule } from './hr/hr.module';
 import { StudentModule } from './student/student.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { TYPEORM_CONFIG } from './config/typeOrm.config';
 import { Student_urlsModule } from './student_urls/student_urls.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '',
-      database: 'megak_hr',
-      entities: ['dist/**/**.entity{.ts,.js}'],
-      bigNumberStrings: false,
-      logging: true,
-      synchronize: true,
-    }),
+    TypeOrmModule.forRoot(TYPEORM_CONFIG)],
     AuthModule,
     UserModule,
     HrModule,
