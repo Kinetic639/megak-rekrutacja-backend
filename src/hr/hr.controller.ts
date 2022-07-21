@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { HrService } from './hr.service';
 
 @Controller('hr')

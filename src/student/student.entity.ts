@@ -5,10 +5,8 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../user/user.entity';
 import { StudentUrls } from '../student_urls/student_urls.entity';
 import { HrReservations } from '../hr/hr-reservations.entity';
 

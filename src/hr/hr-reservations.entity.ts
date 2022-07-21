@@ -6,7 +6,6 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { StudentUrls } from '../student_urls/student_urls.entity';
 import { Student } from '../student/student.entity';
 import { Hr } from './hr.entity';
 
