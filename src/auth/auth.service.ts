@@ -40,12 +40,15 @@ export class AuthService {
   }
 
   async login(req: AuthLoginDto, res: Response): Promise<any> {
+    console.log('email', req.email);
+    console.log('email', hashPwd(req.pwd));
     try {
       const user = await User.findOneBy({
         email: req.email,
-        hash: hashPwd(req.pwd),
+        pwdHash: hashPwd(req.pwd),
       });
       if (!user) {
+        console.log('user', user);
         return res.json({ message: 'Invalid login data' });
       }
       const token = await this.createToken(await this.generateToken(user));
@@ -64,14 +67,15 @@ export class AuthService {
   }
 
   filter(user: User): RegisterAuthResponse {
-    const { email, userId } = user;
-    return { userId, email };
+    const { email, id } = user;
+    return { id, email };
   }
 
   async register(newU): Promise<RegisterAuthResponse> {
     const user = new User();
     user.email = newU.email;
-    user.hash = hashPwd(newU.pwd);
+    user.pwdHash = hashPwd(newU.pwd);
+    console.log('pwdhash', user.pwdHash);
     await user.save();
     return this.filter(user);
   }
