@@ -57,7 +57,7 @@ export class AuthService {
           httpOnly: true, //dzięki temu front nie widzi ciastek jwt
           sameSite: 'lax',
         })
-        .json({ message: 'Success' });
+        .json({ message: 'Login successful.' });
     } catch (e) {
       return res.json({ message: e.message });
     }
@@ -85,7 +85,7 @@ export class AuthService {
         domain: 'localhost',
         httpOnly: true,
       });
-      return res.json({ ok: true });
+      return res.json({ message: 'Logout successful' });
     } catch (e) {
       return res.json({ error: e.message });
     }
