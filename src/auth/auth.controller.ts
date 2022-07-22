@@ -1,31 +1,35 @@
-import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+  HttpCode,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
-import { AuthLoginDto, RegisterAuthResponse } from './dto/auth-login.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { UserObj } from '../decorators/user-obj.decorator';
-import { User } from '../user/user.entity';
 
-@Controller('auth')
+import { User } from '../user/user.entity';
+import { LocalAuthGuard } from './auth-guards/local-auth.guard';
+import { LoginResponse, LogoutResponse } from '../types';
+
+@Controller('/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/login')
-  async phoneRegister(
-    @Body() req: AuthLoginDto,
-    @Res() res: Response,
-  ): Promise<any> {
-    return await this.authService.login(req, res);
+  @HttpCode(200)
+  @UseGuards(LocalAuthGuard)
+  async login(
+    @Req() { user }: { user: User },
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<LoginResponse> {
+    return this.authService.login(user, res);
   }
 
   @Get('/logout')
-  @UseGuards(AuthGuard('jwt'))
-  async logout(@UserObj() user: User, @Res() res: Response) {
-    return this.authService.logout(user, res);
-  }
-
-  @Post('/register')
-  register(@Body() newUser: AuthLoginDto): Promise<RegisterAuthResponse> {
-    return this.authService.register(newUser);
+  logout(@Res({ passthrough: true }) res: Response): LogoutResponse {
+    return this.authService.logout(res);
   }
 }
