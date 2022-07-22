@@ -220,4 +220,10 @@ export class User extends BaseEntity {
     default: null,
   })
   maxReservedStudents: number | null;
+  @Column({
+    nullable: false,
+    type: 'boolean',
+    default: false,
+  })
+  isActive: boolean;
 }
