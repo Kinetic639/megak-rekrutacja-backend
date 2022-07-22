@@ -1,4 +1,5 @@
 src/config/typeOrm.config.ts
+src/config/secrets.ts
 
 
 server/config/config.ts
