@@ -1,41 +1,13 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
-export enum UserType {
-  ADMIN = 'admin',
-  STUDENT = 'student',
-  HR = 'hr',
-}
-
-export enum Score {
-  'ZERO' = '0',
-  'ONE' = '1',
-  'TWO' = '2',
-  'THREE' = '3',
-  'FOUR' = '4',
-  'FIVE' = '5',
-}
-
-export enum WorkType {
-  'REMOTE' = 'remote',
-  'OFFICE' = 'office',
-  'MOVE' = 'ready to move',
-  'HYBRID' = 'hybrid',
-  'DEFAULT' = 'default',
-}
-
-export enum ContractType {
-  'UOP' = 'uop',
-  'B2B' = 'b2b',
-  'UZ' = 'uz',
-  'UOD' = 'uod',
-  'DEFAULT' = 'default',
-}
-
-export enum Status {
-  'AVAILABLE' = 'available',
-  'BEFORE_INTERVIEW' = 'before interview',
-  'IN_INTERVIEW' = 'in interview',
-}
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { HrReservations } from '../hr/hr-reservations.entity';
+import { Projects } from '../student_urls/projects.entity';
+import { Status, Score, WorkType, UserType, ContractType } from '../types';
 
 @Entity()
 export class User extends BaseEntity {
@@ -80,7 +52,7 @@ export class User extends BaseEntity {
     length: 255,
     default: null,
   })
-  pwdHash: string | null;
+  password: string | null;
 
   @Column({
     nullable: true,
@@ -225,5 +197,14 @@ export class User extends BaseEntity {
     type: 'boolean',
     default: false,
   })
-  isActive: boolean;
+  active: boolean;
+
+  @OneToMany(() => HrReservations, (entity) => entity.hrId)
+  bookingHr: HrReservations[];
+
+  @OneToMany(() => HrReservations, (entity) => entity.studentId)
+  studentReserved: HrReservations[];
+
+  @OneToMany(() => Projects, (entity) => entity.userId)
+  projects: Projects[];
 }
