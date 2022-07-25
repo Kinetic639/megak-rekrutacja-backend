@@ -13,6 +13,17 @@ export class AuthService {
     @Inject(JwtService) private jwtService: JwtService,
   ) {}
 
+  generateToken(user) {
+    const payload = {
+      email: user.email,
+      id: user.id,
+      role: user.userType,
+      token: user.token,
+    };
+
+    return this.jwtService.sign(payload);
+  }
+
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findUserByEmail(email);
 
@@ -31,11 +42,7 @@ export class AuthService {
   }
 
   async login(user: User, response: Response): Promise<LoginResponse> {
-    const payload = { email: user.email, id: user.id, role: user.userType };
-
-    const token = this.jwtService.sign(payload);
-    console.log(token);
-
+    const token = this.generateToken(user);
     response.cookie('auth', token, { signed: true });
     return { message: 'Login successful', user, statusCode: 200 };
   }
@@ -47,4 +54,6 @@ export class AuthService {
       message: 'Logout successful',
     };
   }
+
+  // async activate(token: string) {}
 }
