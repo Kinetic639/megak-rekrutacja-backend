@@ -5,6 +5,8 @@ import { UserService } from '../user/user.service';
 import { Response } from 'express';
 import { User } from '../user/user.entity';
 import { LoginResponse, LogoutResponse } from '../types';
+import { Activate } from './dto/activate.dto';
+import { ActivateResponse } from '../types';
 
 @Injectable()
 export class AuthService {
@@ -56,4 +58,14 @@ export class AuthService {
   }
 
   // async activate(token: string) {}
+  async activate(user: User, data: Activate): Promise<ActivateResponse> {
+    user.password = data.password;
+    user.active = true;
+    await user.save();
+
+    return {
+      statusCode: 202,
+      message: 'Account active successfully',
+    };
+  }
 }

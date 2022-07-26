@@ -6,13 +6,16 @@ import {
   Res,
   UseGuards,
   HttpCode,
+  Query,
+  Body,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 
 import { User } from '../user/user.entity';
 import { LocalAuthGuard } from './auth-guards/local-auth.guard';
-import { LoginResponse, LogoutResponse } from '../types';
+import { ActivateResponse, LoginResponse, LogoutResponse } from '../types';
+import { Activate } from './dto/activate.dto';
 
 @Controller('/auth')
 export class AuthController {
@@ -31,5 +34,13 @@ export class AuthController {
   @Get('/logout')
   logout(@Res({ passthrough: true }) res: Response): LogoutResponse {
     return this.authService.logout(res);
+  }
+
+  @Post('/activate')
+  async activate(
+    @Req() { user }: { user: User },
+    @Body() data: Activate,
+  ): Promise<ActivateResponse> {
+    return this.authService.activate(user, data);
   }
 }
