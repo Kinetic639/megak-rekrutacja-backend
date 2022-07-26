@@ -61,6 +61,7 @@ export class AuthService {
   async activate(user: User, data: Activate): Promise<ActivateResponse> {
     user.password = data.password;
     user.active = true;
+    user.token = null;
     await user.save();
 
     return {
