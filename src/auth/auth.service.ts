@@ -59,7 +59,7 @@ export class AuthService {
 
   // async activate(token: string) {}
   async activate(user: User, data: Activate): Promise<ActivateResponse> {
-    user.password = data.password;
+    user.password = await hash(data.password, 10);
     user.active = true;
     user.token = null;
     await user.save();
