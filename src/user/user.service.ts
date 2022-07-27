@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from './user.entity';
 import { CreateNewHr } from '../types/hr/create-new-hr';
 import { UserType } from '../types';
+import Papa from 'papaparse';
 
 @Injectable()
 export class UserService {
@@ -12,7 +13,14 @@ export class UserService {
     return await User.findOne({ where: { email } });
   }
 
-  // async createdStudent(student) {}
+  async createdStudents(students) {
+    Papa.parse(students, {
+      complete: function (results) {
+        console.log('Finished:', results.data);
+      },
+    });
+  }
+
   async createHr(hr: CreateNewHr): Promise<CreateHrResponse> {
     if (!this.validateEmail(hr.email)) {
       return {
