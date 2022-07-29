@@ -8,8 +8,6 @@ import {
   ignoredStudentReason,
   UserType,
 } from '../types';
-import { CreateNewHr } from '../types/hr/create-new-hr';
-import { UserType } from '../types';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable()
