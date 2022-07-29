@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './user.entity';
-import { CreateNewHr } from '../types/hr/create-new-hr';
-import { UserType } from '../types';
+import { CreateHrResponse, CreateNewHr, UserType } from '../types';
 
 @Injectable()
 export class UserService {
   validateEmail(email: string): boolean {
     return email.includes('@');
   }
+
   async findUserByEmail(email: string): Promise<User | null> {
     return await User.findOne({ where: { email } });
   }
