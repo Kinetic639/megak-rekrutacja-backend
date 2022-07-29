@@ -92,12 +92,12 @@ export class User extends BaseEntity {
   courseEngagement: Score | null;
 
   @Column({
-    type: 'enum',
-    nullable: false,
-    enum: Score,
+    precision: 3,
+    scale: 2,
+    nullable: true,
     default: null,
   })
-  projectDegree: Score | null;
+  projectDegree: number | null;
 
   @Column({
     type: 'enum',
