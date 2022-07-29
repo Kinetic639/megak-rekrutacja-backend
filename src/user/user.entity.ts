@@ -6,7 +6,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { HrReservations } from '../hr/hr-reservations.entity';
-import { Projects } from '../student_urls/projects.entity';
 import { Status, Score, WorkType, UserType, ContractType } from '../types';
 
 @Entity()
@@ -199,12 +198,21 @@ export class User extends BaseEntity {
   })
   active: boolean;
 
+  @Column({
+    nullable: true,
+    length: 255,
+  })
+  bonusProjectUrls: string;
+
+  @Column({
+    nullable: true,
+    length: 255,
+  })
+  portfolioUrls: string;
+
   @OneToMany(() => HrReservations, (entity) => entity.hrId)
   bookingHr: HrReservations[];
 
   @OneToMany(() => HrReservations, (entity) => entity.studentId)
   studentReserved: HrReservations[];
-
-  @OneToMany(() => Projects, (entity) => entity.userId)
-  projects: Projects[];
 }
