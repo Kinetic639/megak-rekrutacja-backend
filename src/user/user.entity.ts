@@ -41,15 +41,15 @@ export class User extends BaseEntity {
   userType: UserType;
 
   @Column({
-    nullable: false,
-    length: 255,
+    nullable: true,
+    length: 36,
     default: null,
   })
   token: string;
 
   @Column({
     nullable: true,
-    length: 255,
+    length: 60,
     default: null,
   })
   password: string | null;
