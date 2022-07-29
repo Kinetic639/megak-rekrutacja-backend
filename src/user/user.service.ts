@@ -8,12 +8,15 @@ import {
   ignoredStudentReason,
   UserType,
 } from '../types';
+
+import { MailService } from '../mail/mail.service';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @Inject(forwardRef(() => AuthService)) private authService: AuthService,
+    @Inject(MailService) private mailService: MailService,
   ) {}
 
   validateEmail(email: string): boolean {
@@ -145,6 +148,12 @@ export class UserService {
     newHr.token = Math.random().toString();
 
     await newHr.save();
+
+    await this.mailService.sendMail(
+      newHr.email,
+      `Nadaj hasło do aplikacji rekrutacja MegaK`,
+      `tu będzie trzeba wstawić treść wiadomości w html :)`,
+    );
 
     const avtivate_Token = this.authService.generateToken(newHr);
     // todo add url and send email
