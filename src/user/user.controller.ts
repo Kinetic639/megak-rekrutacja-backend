@@ -6,7 +6,6 @@ import { CreateNewHr } from '../types/hr/create-new-hr';
 @Controller('user')
 export class UserController {
   constructor(@Inject(UserService) private userService: UserService) {}
-
   @Get('/protected')
   @UseGuards(AuthGuard('admin'))
   async protected() {
@@ -15,7 +14,7 @@ export class UserController {
 
   @Post('/create/hr')
   @UseGuards(AuthGuard('admin'))
-  async createHr(@Body() hr: CreateNewHr) {
+  async createHr(@Body('') hr: CreateNewHr) {
     return this.userService.createHr(hr);
   }
 }
