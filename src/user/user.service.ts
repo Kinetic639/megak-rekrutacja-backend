@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { v4 as uuid } from 'uuid';
 import { User } from './user.entity';
 import {
   CreateHrResponse,
@@ -7,9 +8,16 @@ import {
   ignoredStudentReason,
   UserType,
 } from '../types';
+import { CreateNewHr } from '../types/hr/create-new-hr';
+import { UserType } from '../types';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class UserService {
+  constructor(
+    @Inject(forwardRef(() => AuthService)) private authService: AuthService,
+  ) {}
+
   validateEmail(email: string): boolean {
     return email.includes('@');
   }
@@ -139,6 +147,9 @@ export class UserService {
     newHr.token = Math.random().toString();
 
     await newHr.save();
+
+    const avtivate_Token = this.authService.generateToken(newHr);
+    // todo add url and send email
 
     return {
       statusCode: 201,

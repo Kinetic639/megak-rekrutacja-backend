@@ -5,6 +5,8 @@ import { UserService } from '../user/user.service';
 import { Response } from 'express';
 import { User } from '../user/user.entity';
 import { LoginResponse, LogoutResponse } from '../types';
+import { Activate } from './dto/activate.dto';
+import { ActivateResponse } from '../types';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +14,17 @@ export class AuthService {
     @Inject(forwardRef(() => UserService)) private userService: UserService,
     @Inject(JwtService) private jwtService: JwtService,
   ) {}
+
+  generateToken(user) {
+    const payload = {
+      email: user.email,
+      id: user.id,
+      role: user.userType,
+      token: user.token,
+    };
+
+    return this.jwtService.sign(payload);
+  }
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findUserByEmail(email);
@@ -31,11 +44,7 @@ export class AuthService {
   }
 
   async login(user: User, response: Response): Promise<LoginResponse> {
-    const payload = { email: user.email, id: user.id, role: user.userType };
-
-    const token = this.jwtService.sign(payload);
-    console.log(token);
-
+    const token = this.generateToken(user);
     response.cookie('auth', token, { signed: true });
     return { message: 'Login successful', user, statusCode: 200 };
   }
@@ -45,6 +54,19 @@ export class AuthService {
     return {
       statusCode: 200,
       message: 'Logout successful',
+    };
+  }
+
+  // async activate(token: string) {}
+  async activate(user: User, data: Activate): Promise<ActivateResponse> {
+    user.password = await hash(data.password, 10);
+    user.active = true;
+    user.token = null;
+    await user.save();
+
+    return {
+      statusCode: 202,
+      message: 'Account active successfully',
     };
   }
 }

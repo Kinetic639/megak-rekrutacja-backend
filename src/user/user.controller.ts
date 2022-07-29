@@ -38,7 +38,7 @@ export class UserController {
 
   @Post('/create/hr')
   @UseGuards(AuthGuard('admin'))
-  async createHr(@Body('') hr: CreateNewHr) {
+  async createHr(@Body() hr: CreateNewHr) {
     return this.userService.createHr(hr);
   }
 }
