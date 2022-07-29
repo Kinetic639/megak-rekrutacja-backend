@@ -6,12 +6,9 @@ import { User } from './user.entity';
 import { UserService } from './user.service';
 
 @Module({
-  imports: [
-    forwardRef(() => AuthModule),
-    forwardRef(()=> MailModule),
-  ],
+  imports: [forwardRef(() => AuthModule), forwardRef(() => MailModule)],
   controllers: [UserController],
-  providers: [UserService, User],
+  providers: [UserService, User, MailModule],
   exports: [UserService],
 })
 export class UserModule {}

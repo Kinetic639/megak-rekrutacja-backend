@@ -1,9 +1,20 @@
 import { HandlebarsAdapter } from '@nest-modules/mailer';
+import { MAIL_SECRET } from './config/secrets';
 
 export = {
-  transport: `smtp://admin123:admin456@localhost:2500`,
+  transport: {
+    host: 'smtp.gmail.com',
+    port: 465,
+    ignoreTLS: true,
+    secure: true,
+    auth: {
+      user: 'megakauth@gmail.com',
+      pass: MAIL_SECRET,
+    },
+  },
+
   defaults: {
-    from: 'admin@test.example.com',
+    from: 'megakauth@gmail.com',
   },
   template: {
     dir: './templates/email',

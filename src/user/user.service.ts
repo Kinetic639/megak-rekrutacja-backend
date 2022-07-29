@@ -1,19 +1,17 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from '@nestjs/common';
 import { User } from './user.entity';
-import { CreateNewHr } from '../types/hr/create-new-hr';
-import { UserType } from '../types';
-import { MailModule } from "../mail/mail.module";
-import { MailService } from "../mail/mail.service";
+import { CreateNewHr } from "../types";
+import { CreateHrResponse, UserType } from '../types';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class UserService {
-  constructor(
-    @Inject(MailModule) private mailService: MailService,
-  ) {
-  }
+  constructor(@Inject(MailService) private mailService: MailService) {}
+
   validateEmail(email: string): boolean {
     return email.includes('@');
   }
+
   async findUserByEmail(email: string): Promise<User | null> {
     return await User.findOne({ where: { email } });
   }
@@ -46,8 +44,8 @@ export class UserService {
 
     await this.mailService.sendMail(
       newHr.email,
-      "Nadaj hasło do aplikacji rekrutacja MegaK",
-      `tu będzie trzeba wsawić treść wiadomości w html :)`
+      `Nadaj hasło do aplikacji rekrutacja MegaK`,
+      `tu będzie trzeba wstawić treść wiadomości w html :)`,
     );
     return {
       statusCode: 201,
