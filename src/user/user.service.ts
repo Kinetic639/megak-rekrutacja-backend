@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { User } from './user.entity';
-import { CreateNewHr } from "../types";
+import { CreateNewHr } from '../types';
 import { CreateHrResponse, UserType } from '../types';
 import { MailService } from '../mail/mail.service';
 
