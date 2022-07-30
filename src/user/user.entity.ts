@@ -92,6 +92,7 @@ export class User extends BaseEntity {
   courseEngagement: Score | null;
 
   @Column({
+    type: 'decimal',
     precision: 3,
     scale: 2,
     nullable: true,
