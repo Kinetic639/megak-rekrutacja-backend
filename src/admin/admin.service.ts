@@ -24,13 +24,13 @@ export class AdminService {
     return email.includes('@');
   }
 
-  compareObjects(obj1, obj2) {
+  compareObjects(obj1, obj2): boolean {
     for (const [key, value] of Object.entries(obj1)) {
       if (value !== obj2[key]) {
         return false;
       }
-      return true;
     }
+    return true;
   }
 
   async createdStudents(studentsArr): Promise<createUsersResponse> {
