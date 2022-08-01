@@ -3,6 +3,7 @@ import { User } from './user.entity';
 
 import { MailService } from '../mail/mail.service';
 import { AuthService } from '../auth/auth.service';
+import { UserType } from '../types';
 
 @Injectable()
 export class UserService {
@@ -13,6 +14,19 @@ export class UserService {
 
   async findUserByEmail(email: string): Promise<User | null> {
     return await User.findOne({ where: { email } });
+  }
+
+  async getStudentsBasicData(): Promise<User[] | null> {
+    return await User.createQueryBuilder('user')
+      .select([
+        'user.email',
+        'user.courseCompletion',
+        'user.courseEngagement',
+        'user.projectDegree',
+        'user.teamProjectDegree',
+      ])
+      .where('user.userType = :type', { type: UserType.STUDENT })
+      .getMany();
   }
 
   async protected() {

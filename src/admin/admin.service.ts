@@ -1,6 +1,3 @@
-import { Injectable } from '@nestjs/common';
-import { User } from '../user/user.entity';
-import { UserType } from '../types';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { MailService } from '../mail/mail.service';
@@ -34,19 +31,6 @@ export class AdminService {
       }
     }
     return true;
-  }
-
-  async getStudentsBasicData(): Promise<User[] | null> {
-    return await User.createQueryBuilder('user')
-      .select([
-        'user.email',
-        'user.courseCompletion',
-        'user.courseEngagement',
-        'user.projectDegree',
-        'user.teamProjectDegree',
-      ])
-      .where('user.userType = :type', { type: UserType.STUDENT })
-      .getMany();
   }
 
   async createdStudents(studentsArr): Promise<createUsersResponse> {
@@ -170,7 +154,7 @@ export class AdminService {
       `tu będzie trzeba wstawić treść wiadomości w html :)`,
     );
 
-    const avtivate_Token = this.authService.generateToken(newHr);
+    this.authService.generateToken(newHr);
     // todo add url and send email
 
     return {

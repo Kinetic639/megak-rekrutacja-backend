@@ -28,12 +28,6 @@ export class AdminController {
     return this.userService.protected();
   }
 
-  @Get('/students')
-  // @UseGuards(AuthGuard('admin'))
-  async getStudentsBasicData() {
-    return this.adminService.getStudentsBasicData();
-  }
-
   @Post('/create/students')
   // @UseGuards(AuthGuard('admin'))
   @UseInterceptors(FileInterceptor('file_asset'))
