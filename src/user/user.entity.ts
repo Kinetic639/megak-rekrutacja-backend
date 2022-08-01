@@ -132,11 +132,11 @@ export class User extends BaseEntity {
   expectedContractType: ContractType | null;
 
   @Column({
+    type: 'smallint',
     nullable: true,
-    length: 5,
-    default: null,
+    default: 0,
   })
-  expectedSalary: string | null;
+  expectedSalary: number | null;
 
   @Column({
     nullable: false,
@@ -192,6 +192,7 @@ export class User extends BaseEntity {
     default: null,
   })
   maxReservedStudents: number | null;
+
   @Column({
     nullable: false,
     type: 'boolean',
