@@ -5,3 +5,11 @@ export enum ContractType {
   'UOD' = 'uod',
   'DEFAULT' = 'default',
 }
+
+export const ContractTypeMap = [
+  ContractType.UOP,
+  ContractType.B2B,
+  ContractType.UZ,
+  ContractType.UOD,
+  ContractType.DEFAULT,
+];
