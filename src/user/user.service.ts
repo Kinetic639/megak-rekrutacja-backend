@@ -1,5 +1,4 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { v4 as uuid } from 'uuid';
 import { User } from './user.entity';
 import {
   CreateHrResponse,
@@ -27,8 +26,8 @@ export class UserService {
       if (value !== obj2[key]) {
         return false;
       }
-      return true;
     }
+    return true;
   }
   async findUserByEmail(email: string): Promise<User | null> {
     return await User.findOne({ where: { email } });
@@ -37,7 +36,7 @@ export class UserService {
   async createdStudents(studentsArr): Promise<createUsersResponse> {
     const results: createUsersResponse = {
       studentsIgnored: [],
-      studentUpdated: [],
+      studentsUpdated: [],
       studentsAdded: [],
     };
 
@@ -49,6 +48,7 @@ export class UserService {
           email,
           projectDegree,
           teamProjectDegree,
+          bonusProjectUrls,
         } = student;
         const {
           EMAIL_INVALID,
@@ -98,7 +98,7 @@ export class UserService {
         } else if (currUser) {
           if (!this.compareObjects(student, currUser)) {
             await User.update(currUser.id, student);
-            results.studentUpdated.push(email);
+            results.studentsUpdated.push(email);
           } else {
             results.studentsIgnored.push({
               email: email,
@@ -113,10 +113,19 @@ export class UserService {
           newStudent.courseEngagement = courseEngagement;
           newStudent.projectDegree = projectDegree;
           newStudent.teamProjectDegree = teamProjectDegree;
+          newStudent.bonusProjectUrls = bonusProjectUrls;
           newStudent.token = Math.random().toString();
 
           await newStudent.save();
           results.studentsAdded.push(email);
+
+          // await this.mailService.sendMail(
+          //   newStudent.email,
+          //   `Nadaj hasło do aplikacji rekrutacja MegaK`,
+          //   `tu będzie trzeba wstawić treść wiadomości w html :)`,
+          // );
+          //
+          // const activate_Token = this.authService.generateToken(newStudent);
         }
       }),
     );
@@ -155,8 +164,7 @@ export class UserService {
       `tu będzie trzeba wstawić treść wiadomości w html :)`,
     );
 
-    const avtivate_Token = this.authService.generateToken(newHr);
-    // todo add url and send email
+    this.authService.generateToken(newHr);
 
     return {
       statusCode: 201,

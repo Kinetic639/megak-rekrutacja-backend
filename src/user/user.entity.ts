@@ -77,7 +77,7 @@ export class User extends BaseEntity {
 
   @Column({
     type: 'enum',
-    nullable: false,
+    nullable: true,
     enum: Score,
     default: null,
   })
@@ -85,24 +85,23 @@ export class User extends BaseEntity {
 
   @Column({
     type: 'enum',
-    nullable: false,
+    nullable: true,
     enum: Score,
     default: null,
   })
   courseEngagement: Score | null;
 
   @Column({
-    type: 'decimal',
-    precision: 3,
-    scale: 2,
+    type: 'enum',
     nullable: true,
+    enum: Score,
     default: null,
   })
-  projectDegree: number | null;
+  projectDegree: Score | null;
 
   @Column({
     type: 'enum',
-    nullable: false,
+    nullable: true,
     enum: Score,
     default: null,
   })
@@ -110,7 +109,7 @@ export class User extends BaseEntity {
 
   @Column({
     type: 'enum',
-    nullable: false,
+    nullable: true,
     enum: WorkType,
     default: WorkType.DEFAULT,
   })
@@ -125,7 +124,7 @@ export class User extends BaseEntity {
 
   @Column({
     type: 'enum',
-    nullable: false,
+    nullable: true,
     enum: ContractType,
     default: ContractType.DEFAULT,
   })
