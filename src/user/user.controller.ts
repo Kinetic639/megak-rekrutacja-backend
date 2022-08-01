@@ -25,7 +25,7 @@ export class UserController {
   }
 
   @Post('/create/students')
-  @UseGuards(AuthGuard('admin'))
+  // @UseGuards(AuthGuard('admin'))
   @UseInterceptors(FileInterceptor('file_asset'))
   async createStudents(
     @UploadedFile() file: any,

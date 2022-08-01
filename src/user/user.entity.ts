@@ -98,7 +98,7 @@ export class User extends BaseEntity {
     nullable: true,
     default: null,
   })
-  projectDegree: number | null;
+  projectDegree: Score | null;
 
   @Column({
     type: 'enum',
