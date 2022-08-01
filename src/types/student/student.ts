@@ -1,9 +1,20 @@
+import { ContractType, WorkType } from '../user';
+
 export interface csvStudent {
   email: string;
   courseCompletion: number;
   courseEngagement: number;
   projectDegree: number;
   teamProjectDegree: number;
+}
+
+export interface filterStudents extends Omit<csvStudent, 'email'> {
+  expectedSalaryFrom: number;
+  expectedSalaryTo: number;
+  expectedContractType: ContractType[];
+  expectedTypeWork: WorkType[];
+  canTakeApprenticeship: boolean;
+  monthsOfCommercialExp: number;
 }
 
 export enum ignoredStudentReason {
