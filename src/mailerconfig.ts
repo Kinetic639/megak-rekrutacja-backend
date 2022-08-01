@@ -11,6 +11,9 @@ export = {
       user: 'megakauth@gmail.com',
       pass: MAIL_SECRET,
     },
+    tls: {
+      rejectUnauthorized: false,
+    },
   },
 
   defaults: {
