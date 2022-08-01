@@ -36,7 +36,7 @@ export class AdminService {
   async createdStudents(studentsArr): Promise<createUsersResponse> {
     const results: createUsersResponse = {
       studentsIgnored: [],
-      studentUpdated: [],
+      studentsUpdated: [],
       studentsAdded: [],
     };
 
@@ -97,7 +97,7 @@ export class AdminService {
         } else if (currUser) {
           if (!this.compareObjects(student, currUser)) {
             await User.update(currUser.id, student);
-            results.studentUpdated.push(email);
+            results.studentsUpdated.push(email);
           } else {
             results.studentsIgnored.push({
               email: email,
