@@ -1,4 +1,4 @@
-/ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+// import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 //
 // export const TYPEORM_CONFIG: TypeOrmModuleOptions = {
 //   type: 'mysql',
