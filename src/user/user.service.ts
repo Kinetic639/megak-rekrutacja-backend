@@ -19,6 +19,7 @@ export class UserService {
   async getStudentsBasicData(): Promise<User[] | null> {
     return await User.createQueryBuilder('user')
       .select([
+        'user.id',
         'user.email',
         'user.courseCompletion',
         'user.courseEngagement',
