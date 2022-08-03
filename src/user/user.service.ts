@@ -3,7 +3,7 @@ import { User } from './user.entity';
 
 import { MailService } from '../mail/mail.service';
 import { AuthService } from '../auth/auth.service';
-import { GetUsersBasicDataResponse, UserType } from '../types';
+import { UserType } from '../types';
 
 @Injectable()
 export class UserService {
