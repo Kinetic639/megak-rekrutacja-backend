@@ -1,7 +1,6 @@
 import { Controller, Get, Inject, Param, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUsersBasicDataResponse } from '../types';
 import { User } from './user.entity';
 
 @Controller('user')
