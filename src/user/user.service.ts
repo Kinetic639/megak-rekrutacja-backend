@@ -3,7 +3,7 @@ import { User } from './user.entity';
 
 import { MailService } from '../mail/mail.service';
 import { AuthService } from '../auth/auth.service';
-import { UserType } from '../types';
+import { GetUsersBasicDataResponse, UserType } from '../types';
 
 @Injectable()
 export class UserService {
@@ -24,6 +24,14 @@ export class UserService {
         'user.courseEngagement',
         'user.projectDegree',
         'user.teamProjectDegree',
+        'user.expectedTypeWork',
+        'user.targetWorkCity',
+        'user.expectedContractType',
+        'user.expectedSalary',
+        'user.canTakeApprenticeship',
+        'user.monthsOfCommercialExp',
+        'user.firstName',
+        'user.lastName',
       ])
       .where('user.userType = :type', { type: UserType.STUDENT })
       .getMany();
