@@ -21,9 +21,9 @@ export class HrReservations extends BaseEntity {
 
   @ManyToOne(() => User, (entity) => entity.studentReserved)
   @JoinColumn({ name: 'studentId' })
-  studentId: User[];
+  studentId: string;
 
   @ManyToOne(() => User, (entity) => entity.bookingHr)
   @JoinColumn({ name: 'hrId' })
-  hrId: User[];
+  hrId: string;
 }
