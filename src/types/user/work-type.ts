@@ -5,3 +5,11 @@ export enum WorkType {
   'HYBRID' = 'hybrid',
   'DEFAULT' = 'default',
 }
+
+export const WorkTypeMap = [
+  WorkType.REMOTE,
+  WorkType.OFFICE,
+  WorkType.MOVE,
+  WorkType.HYBRID,
+  WorkType.DEFAULT,
+];

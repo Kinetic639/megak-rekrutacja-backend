@@ -6,3 +6,12 @@ export enum Score {
   'FOUR' = '4',
   'FIVE' = '5',
 }
+
+export const ScoreMap = [
+  Score.ZERO,
+  Score.ONE,
+  Score.TWO,
+  Score.THREE,
+  Score.FOUR,
+  Score.FIVE,
+];
