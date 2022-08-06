@@ -5,7 +5,7 @@ import { User } from './user.entity';
 
 @Controller('user')
 export class UserController {
-  constructor(@Inject(UserService) private userService: UserService) {}
+  constructor(@Inject(UserService) private userService: UserService) { }
 
   @Get('/')
   async showUser(@Param() email: string) {
@@ -14,6 +14,11 @@ export class UserController {
   @Get('/:email')
   async findUserByEmail(@Param() email: string) {
     return this.userService.findUserByEmail(email);
+  }
+
+  @Get('/id/:id')
+  async findUserById(@Param() id: string) {
+    return this.userService.findUserById(id);
   }
 
   @Get('/list/basic')
