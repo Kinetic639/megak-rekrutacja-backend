@@ -9,6 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailModule } from './mail/mail.module';
 import { StudentModule } from './student/student.module';
 import { HrModule } from './hr/hr.module';
+import { HrModule } from './hr/hr.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { UserModule } from './user/user.module';
     StudentModule,
     HrModule,
     UserModule,
+    HrModule,
   ],
   controllers: [AppController],
   providers: [AppService],
