@@ -51,6 +51,7 @@ export class AuthController {
   }
 
   @Post('/activate')
+  @UseGuards(AuthGuard('activate'))
   async activate(
     @Req() { user }: { user: User },
     @Body() data: Activate,
