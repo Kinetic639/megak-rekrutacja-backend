@@ -1,8 +1,8 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Req } from '@nestjs/common';
 import { hash, compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { User } from '../user/user.entity';
 import { LoginResponse, LogoutResponse } from '../types';
 import { Activate } from './dto/activate.dto';
@@ -45,12 +45,22 @@ export class AuthService {
 
   async login(user: User, response: Response): Promise<LoginResponse> {
     const token = this.generateToken(user);
-    response.cookie('auth', token, { signed: true });
+    response.cookie('auth', token, {
+      signed: true,
+    });
+    response.cookie('user', user, {
+      signed: true,
+    });
     return { message: 'Login successful', user, statusCode: 200 };
   }
 
-  logout(res: Response): LogoutResponse {
-    res.clearCookie('auth');
+  validateSessionUser(request: Request) {
+    return request.signedCookies.user;
+  }
+
+  logout(response: Response) {
+    response.clearCookie('auth');
+    response.clearCookie('user');
     return {
       statusCode: 200,
       message: 'Logout successful',

@@ -10,12 +10,13 @@ import {
   Body,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 
 import { User } from '../user/user.entity';
 import { LocalAuthGuard } from './auth-guards/local-auth.guard';
 import { ActivateResponse, LoginResponse, LogoutResponse } from '../types';
 import { Activate } from './dto/activate.dto';
+import { Cookies } from '../decorators/get-cookies.decorator';
 
 @Controller('/auth')
 export class AuthController {
@@ -29,6 +30,11 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<LoginResponse> {
     return this.authService.login(user, res);
+  }
+
+  @Get('/check-user')
+  validateSessionUser(@Req() request: Request) {
+    return this.authService.validateSessionUser(request);
   }
 
   @Get('/logout')

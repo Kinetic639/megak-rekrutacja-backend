@@ -6,6 +6,10 @@ import { User } from '../user/user.entity';
 @Controller('student')
 export class StudentController {
   constructor(@Inject(StudentService) private studentService: StudentService) {}
+  @Get('/')
+  async student() {
+    return { student: 'student path' };
+  }
 
   @Get('/student?')
   async filter(@Query() query: FilterDto): Promise<User[] | null> {
