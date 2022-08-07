@@ -170,12 +170,8 @@ export class AdminService {
 
     return {
       statusCode: 201,
-      message: `New HR ${newHr.firstName} ${newHr.lastName} successfully created`,
+      message: `Nowy HR ${newHr.firstName} ${newHr.lastName} dodany do aplikacji`,
       hrId: newHr.id,
     };
-  }
-
-  async protected() {
-    return { message: 'Protected' };
   }
 }
