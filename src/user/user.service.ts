@@ -42,6 +42,29 @@ export class UserService {
       .getMany();
   }
 
+  async getStudentBasicData(id: string): Promise<User | null> {
+    return await User.createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.email',
+        'user.courseCompletion',
+        'user.courseEngagement',
+        'user.projectDegree',
+        'user.teamProjectDegree',
+        'user.expectedTypeWork',
+        'user.targetWorkCity',
+        'user.expectedContractType',
+        'user.expectedSalary',
+        'user.canTakeApprenticeship',
+        'user.monthsOfCommercialExp',
+        'user.firstName',
+        'user.lastName',
+      ])
+      .where('user.userType = :type', { type: UserType.STUDENT })
+      .andWhere("user.id = :id", { id })
+      .getOne();
+  }
+
   async protected() {
     return { message: 'Protected' };
   }
