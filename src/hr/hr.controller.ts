@@ -19,4 +19,13 @@ export class HrController {
   ): Promise<StudentReservation> {
     return this.hrService.reserveStudent(id, req);
   }
+
+  @Patch('/cancel/:id')
+  // @UseGuards(AuthGuard('hr'))
+  async cancelStudent(
+    @Param('id') id: string,
+    @Req() req: Request,
+  ): Promise<StudentReservation> {
+    return this.hrService.cancelStudent(id, req);
+  }
 }

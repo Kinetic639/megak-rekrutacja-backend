@@ -4,7 +4,6 @@ import { User } from '../user/user.entity';
 import { Status, UserType } from '../types';
 import { StudentReservation } from './hr.controller';
 import { HrReservations } from './hr-reservations.entity';
-import { max } from 'rxjs';
 
 @Injectable()
 export class HrService {
@@ -66,6 +65,60 @@ export class HrService {
           },
         ])
         .execute();
+    } catch (error) {
+      console.error(error);
+      return {
+        message: 'Przepraszamy, wystąpił błąd. Spróbuj ponownie później. ',
+        status: false,
+      };
+    }
+  }
+
+  async cancelStudent(id: string, req: Request) {
+    const currentUserId = 'aac51c25-d16c-4adb-a230-bd12887bbc40'; //TODO dodać możliwość pobierania ID użytkownika wysyłającego requesta
+
+    try {
+      const { status, active, userType } = await User.createQueryBuilder('user')
+        .select([
+          'user.status',
+          'user.active',
+          'user.maxReservedStudents',
+          'user.userType',
+        ])
+        .where('user.id = :id', { id: id })
+        .getOne();
+
+      if (
+        !(
+          status === Status.BEFORE_INTERVIEW &&
+          userType === UserType.STUDENT &&
+          active
+        )
+      )
+        return {
+          message: 'Nie możesz wycofać rezerwacji tego kursanta.',
+          status: false,
+        };
+
+      await HrReservations.createQueryBuilder('hrReservation')
+        .delete()
+        .from(HrReservations)
+        .where('studentId = :id AND hrId = :currentUserId', {
+          id: id,
+          currentUserId: currentUserId,
+        })
+        .execute();
+
+      await User.createQueryBuilder('user')
+        .update(User)
+        .set({ status: Status.AVAILABLE })
+        .where('user.id = :id', { id: id })
+        .execute();
+
+      return {
+        message: 'Wybrany kursant jest ponownie dostępny. ',
+        status: true,
+      };
     } catch (error) {
       console.error(error);
       return {
