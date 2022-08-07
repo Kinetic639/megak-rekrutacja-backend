@@ -29,7 +29,7 @@ export class UserController {
 
   @Get('/student/:id')
   // @UseGuards(AuthGuard('admin'))
-  async getStudentBasicData(@Param() id: string): Promise<User> {
+  async getStudentBasicData(@Param('id') id: string): Promise<User> {
     return this.userService.getStudentBasicData(id);
   }
 }
