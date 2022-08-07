@@ -4,7 +4,11 @@ import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { Request, Response } from 'express';
 import { User } from '../user/user.entity';
-import { LoginResponse, LogoutResponse } from '../types';
+import {
+  LoginResponse,
+  LogoutResponse,
+  ValidateSessionUserResponse,
+} from '../types';
 import { Activate } from './dto/activate.dto';
 import { ActivateResponse } from '../types';
 
@@ -23,7 +27,7 @@ export class AuthService {
       token: user.token,
     };
 
-    return this.jwtService.sign(payload, { expiresIn: '10h' });
+    return this.jwtService.sign(payload, { expiresIn: '30s' });
   }
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -54,8 +58,8 @@ export class AuthService {
     return { message: 'Login successful', user, statusCode: 200 };
   }
 
-  validateSessionUser(request: Request) {
-    return request.signedCookies.user;
+  validateSessionUser(user: User): ValidateSessionUserResponse {
+    return { user, status: 200 };
   }
 
   logout(response: Response) {
