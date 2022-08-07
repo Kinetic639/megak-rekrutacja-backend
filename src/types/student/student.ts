@@ -22,6 +22,6 @@ interface ignoredStudent {
 
 export type createUsersResponse = {
   studentsIgnored: ignoredStudent[];
-  studentUpdated: string[];
+  studentsUpdated: string[];
   studentsAdded: string[];
 };

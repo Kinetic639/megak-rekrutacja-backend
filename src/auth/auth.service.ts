@@ -23,7 +23,7 @@ export class AuthService {
       token: user.token,
     };
 
-    return this.jwtService.sign(payload);
+    return this.jwtService.sign(payload, { expiresIn: '10h' });
   }
 
   async validateUser(email: string, password: string): Promise<any> {
