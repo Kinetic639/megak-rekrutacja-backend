@@ -36,8 +36,9 @@ export class JwtStudentStrategy extends PassportStrategy(Strategy, 'student') {
     if (
       !(user.userType === UserType.STUDENT || user.userType === UserType.ADMIN)
     ) {
-      throw new HttpException('Incorrect user roles ', HttpStatus.FORBIDDEN);
+      throw new HttpException('Brak dostępu do zasobów', HttpStatus.FORBIDDEN);
     }
-    return { ...payload };
+    const { password, token, ...rest } = user;
+    return rest;
   }
 }

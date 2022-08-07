@@ -8,12 +8,59 @@ import { LoginResponse, LogoutResponse } from '../types';
 import { Activate } from './dto/activate.dto';
 import { ActivateResponse } from '../types';
 
+interface ValidPass {
+  message: string;
+  statusCode: number;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
     @Inject(forwardRef(() => UserService)) private userService: UserService,
     @Inject(JwtService) private jwtService: JwtService,
   ) {}
+
+  private validatePassword(password: string): ValidPass {
+    if (password.length < 7) {
+      return {
+        message: 'Hasło musi zawierać co najmniej 8 znaków',
+        statusCode: 404,
+      };
+    }
+
+    if (!/(?=.[A-Z])/.test(password)) {
+      return {
+        message: 'Hasło musi zawierać conajmniej jedną dużą litere',
+        statusCode: 404,
+      };
+    }
+
+    if (!/(?=.[a-z])/.test(password)) {
+      return {
+        message: 'Hasło musi zawierać conajmniej jedną małą litere',
+        statusCode: 404,
+      };
+    }
+
+    if (!/(?=.*[@#$%^&+=!_~])/.test(password)) {
+      return {
+        message: 'Hasło musi zawierać conajmniej jeden znak specjalny',
+        statusCode: 404,
+      };
+    }
+
+    if (!/(?=.*[0-9])/.test(password)) {
+      return {
+        message: 'Hasło musi zawierać conajmniej jedną liczbe',
+        statusCode: 404,
+      };
+    }
+
+    return {
+      message: 'Hasło poprawne',
+      statusCode: 200,
+    };
+  }
 
   generateToken(user) {
     const payload = {
@@ -30,14 +77,22 @@ export class AuthService {
     const user = await this.userService.findUserByEmail(email);
 
     if (!user) {
-      return { token: null, message: 'Incorrect email' };
+      return { auth: null, message: 'Niepoprawny e-mail' };
     }
+
+    if (user.token === null) {
+      return {
+        auth: null,
+        message: 'Problem z tokenem skontaktuj się z Administracją',
+      };
+    }
+
     if (user.password !== password) {
       //todo add becrypt compare to check password
-      return { token: null, message: 'Incorrect password' };
+      return { auth: null, message: 'Niepoprawne hasło' };
     }
     if (!user.active) {
-      return { token: null, message: 'Account is not active' };
+      return { auth: null, message: 'Konto nieaktywne' };
     }
     const { password: _pass, ...result } = user;
     return result;
@@ -46,19 +101,36 @@ export class AuthService {
   async login(user: User, response: Response): Promise<LoginResponse> {
     const token = this.generateToken(user);
     response.cookie('auth', token, { signed: true });
-    return { message: 'Login successful', user, statusCode: 200 };
+    return { message: 'Zalogowano', user, statusCode: 200 };
   }
 
   logout(res: Response): LogoutResponse {
     res.clearCookie('auth');
     return {
       statusCode: 200,
-      message: 'Logout successful',
+      message: 'Wylogowano',
     };
   }
 
-  // async activate(token: string) {}
   async activate(user: User, data: Activate): Promise<ActivateResponse> {
+    console.log(data);
+    if (
+      !data.password ||
+      !data.rePassword ||
+      data.password !== data.rePassword
+    ) {
+      return {
+        message: 'Musisz uzupełnić i powtórzyć hasło i muszą być takie same',
+        statusCode: 404,
+      };
+    }
+
+    const validatePass: ValidPass = this.validatePassword(data.password);
+
+    if (validatePass.statusCode !== 200) {
+      return validatePass;
+    }
+
     user.password = await hash(data.password, 10);
     user.active = true;
     user.token = null;
@@ -66,7 +138,7 @@ export class AuthService {
 
     return {
       statusCode: 202,
-      message: 'Account active successfully',
+      message: 'Konto aktywowane poprawnie',
     };
   }
 }
