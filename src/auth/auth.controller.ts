@@ -8,6 +8,7 @@ import {
   HttpCode,
   Query,
   Body,
+  SetMetadata,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
@@ -22,6 +23,7 @@ import {
 } from '../types';
 import { Activate } from './dto/activate.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { AdminAuthGuard } from './auth-guards/admin-auth.guard';
 
 @Controller('/auth')
 export class AuthController {
@@ -55,7 +57,10 @@ export class AuthController {
   async activate(
     @Req() { user }: { user: User },
     @Body() data: Activate,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<ActivateResponse> {
-    return this.authService.activate(user, data);
+    const response = await this.authService.activate(user, data);
+    res.status(response.statusCode);
+    return response;
   }
 }

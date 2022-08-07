@@ -32,8 +32,9 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, 'admin') {
   }) {
     const user = await this.userService.findUserByEmail(payload.email);
     if (user.userType !== UserType.ADMIN) {
-      throw new HttpException('Incorrect user roles ', HttpStatus.FORBIDDEN);
+      throw new HttpException('Brak dostępu do zasobów', HttpStatus.FORBIDDEN);
     }
-    return { ...payload };
+    const { password, token, ...rest } = user;
+    return rest;
   }
 }

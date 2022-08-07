@@ -12,9 +12,9 @@ import { UserService } from '../../user/user.service';
 import { extractJwtFromQuery } from './extract-jwt-from-req-param';
 
 @Injectable()
-export class JwtActiveAccountStrategy extends PassportStrategy(
+export class JwtActivateAccountStrategy extends PassportStrategy(
   Strategy,
-  'admin',
+  'activate',
 ) {
   constructor(
     @Inject(forwardRef(() => UserService)) private userService: UserService,
@@ -36,14 +36,17 @@ export class JwtActiveAccountStrategy extends PassportStrategy(
     const user = await this.userService.findUserByEmail(payload.email);
     if (user.active) {
       throw new HttpException(
-        'Account is already active',
+        'Twoje konto zostało już aktywowane',
         HttpStatus.FORBIDDEN,
       );
     }
     if (user.token !== payload.token) {
-      throw new HttpException('Token is wrong', HttpStatus.FORBIDDEN);
+      throw new HttpException(
+        'Twój token wygasł skontaktuj się z Administracją',
+        HttpStatus.FORBIDDEN,
+      );
     }
 
-    return payload;
+    return user;
   }
 }

@@ -13,6 +13,8 @@ import { AdminAuthGuard } from './auth-guards/admin-auth.guard';
 import { JwtAdminStrategy } from './passport-strategy/jwt.admin.strategy';
 import { JwtHrStrategy } from './passport-strategy/jwt.hr.strategy';
 import { JWT_SECRET } from '../config/secrets';
+import { ActivateAuthGuard } from './auth-guards/activate.guard';
+import { JwtActivateAccountStrategy } from './passport-strategy/activate.strategy';
 import { UserAuthGuard } from './auth-guards/user-auth.guard';
 import { JwtUserStrategy } from './passport-strategy/jwt.user.strategy';
 
@@ -37,6 +39,8 @@ import { JwtUserStrategy } from './passport-strategy/jwt.user.strategy';
     StudentAuthGuard,
     AdminAuthGuard,
     HrAuthGuard,
+    ActivateAuthGuard,
+    JwtActivateAccountStrategy,
     UserAuthGuard,
     JwtUserStrategy,
   ],
