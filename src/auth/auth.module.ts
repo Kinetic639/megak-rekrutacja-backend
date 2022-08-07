@@ -13,10 +13,14 @@ import { AdminAuthGuard } from './auth-guards/admin-auth.guard';
 import { JwtAdminStrategy } from './passport-strategy/jwt.admin.strategy';
 import { JwtHrStrategy } from './passport-strategy/jwt.hr.strategy';
 import { JWT_SECRET } from '../config/secrets';
+import { MailModule } from '../mail/mail.module';
+import { ResetPasswordAuthGuard } from './auth-guards/reset-password.guard';
+import { JwtResetPasswordStrategy } from './passport-strategy/reset-password.strategy';
 
 @Module({
   imports: [
     forwardRef(() => UserModule),
+    forwardRef(() => MailModule),
     PassportModule,
     JwtModule.register({
       secret: JWT_SECRET,
@@ -35,6 +39,8 @@ import { JWT_SECRET } from '../config/secrets';
     StudentAuthGuard,
     AdminAuthGuard,
     HrAuthGuard,
+    ResetPasswordAuthGuard,
+    JwtResetPasswordStrategy,
   ],
   controllers: [AuthController],
   exports: [AuthService],
