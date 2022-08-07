@@ -13,6 +13,8 @@ import { AdminAuthGuard } from './auth-guards/admin-auth.guard';
 import { JwtAdminStrategy } from './passport-strategy/jwt.admin.strategy';
 import { JwtHrStrategy } from './passport-strategy/jwt.hr.strategy';
 import { JWT_SECRET } from '../config/secrets';
+import { UserAuthGuard } from './auth-guards/user-auth.guard';
+import { JwtUserStrategy } from './passport-strategy/jwt.user.strategy';
 
 @Module({
   imports: [
@@ -35,6 +37,8 @@ import { JWT_SECRET } from '../config/secrets';
     StudentAuthGuard,
     AdminAuthGuard,
     HrAuthGuard,
+    UserAuthGuard,
+    JwtUserStrategy,
   ],
   controllers: [AuthController],
   exports: [AuthService],

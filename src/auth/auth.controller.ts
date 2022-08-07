@@ -14,9 +14,14 @@ import { Response, Request } from 'express';
 
 import { User } from '../user/user.entity';
 import { LocalAuthGuard } from './auth-guards/local-auth.guard';
-import { ActivateResponse, LoginResponse, LogoutResponse } from '../types';
+import {
+  ActivateResponse,
+  LoginResponse,
+  LogoutResponse,
+  ValidateSessionUserResponse,
+} from '../types';
 import { Activate } from './dto/activate.dto';
-import { Cookies } from '../decorators/get-cookies.decorator';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('/auth')
 export class AuthController {
@@ -33,8 +38,11 @@ export class AuthController {
   }
 
   @Get('/check-user')
-  validateSessionUser(@Req() request: Request) {
-    return this.authService.validateSessionUser(request);
+  @UseGuards(AuthGuard('user'))
+  validateSessionUser(
+    @Req() { user }: { user: User },
+  ): ValidateSessionUserResponse {
+    return this.authService.validateSessionUser(user);
   }
 
   @Get('/logout')
