@@ -80,15 +80,7 @@ export class AuthService {
       return { auth: null, message: 'Niepoprawny e-mail' };
     }
 
-    if (user.token === null) {
-      return {
-        auth: null,
-        message: 'Problem z tokenem skontaktuj się z Administracją',
-      };
-    }
-
-    if (user.password !== password) {
-      //todo add becrypt compare to check password
+    if (!(await compare(password, user.password))) {
       return { auth: null, message: 'Niepoprawne hasło' };
     }
     if (!user.active) {
