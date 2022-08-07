@@ -59,6 +59,13 @@ export class UserService {
         'user.monthsOfCommercialExp',
         'user.firstName',
         'user.lastName',
+        'user.bonusProjectUrls',
+        'user.portfolioUrls',
+        'user.githubUsername',
+        'user.tel',
+        'user.bio',
+        'user.education',
+        'user.courses'
       ])
       .where('user.userType = :type', { type: UserType.STUDENT })
       .andWhere("user.id = :id", { id })
