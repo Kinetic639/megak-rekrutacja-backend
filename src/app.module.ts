@@ -7,6 +7,9 @@ import { TYPEORM_CONFIG } from './config/typeOrm.config';
 import { AdminModule } from './admin/admin.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailModule } from './mail/mail.module';
+import { UserModule } from './user/user.module';
+import { StudentModule } from './student/student.module';
+import { Student_urlsModule } from './student_urls/student_urls.module';
 
 @Module({
   imports: [
@@ -15,8 +18,11 @@ import { MailModule } from './mail/mail.module';
     PanelModule,
     AdminModule,
     MailModule,
+    UserModule,
+    StudentModule,
+    Student_urlsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
