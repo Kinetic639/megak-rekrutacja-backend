@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Request } from 'express';
 import { User } from '../user/user.entity';
 import { Status, UserType } from '../types';
 import { StudentReservation } from './hr.controller';
@@ -7,9 +6,7 @@ import { HrReservations } from './hr-reservations.entity';
 
 @Injectable()
 export class HrService {
-  async reserveStudent(id: string, req: Request): Promise<StudentReservation> {
-    const currentUserId = 'aac51c25-d16c-4adb-a230-bd12887bbc40'; //TODO dodać możliwość pobierania ID użytkownika wysyłającego requesta
-
+  async reserveStudent(id: string, user: User): Promise<StudentReservation> {
     try {
       const { status, active, userType } = await User.createQueryBuilder('user')
         .select([
@@ -35,11 +32,11 @@ export class HrService {
 
       const { maxReservedStudents } = await User.createQueryBuilder('user')
         .select(['user.maxReservedStudents'])
-        .where('user.id = :id', { id: currentUserId })
+        .where('user.id = :id', { id: user.id })
         .getOne();
 
       const count = await HrReservations.createQueryBuilder('hrReservation')
-        .where('hrReservation.hrId = :id', { id: currentUserId })
+        .where('hrReservation.hrId = :id', { id: user.id })
         .getCount();
 
       if (count >= maxReservedStudents)
@@ -61,7 +58,7 @@ export class HrService {
           {
             date: new Date(),
             studentId: id,
-            hrId: currentUserId,
+            hrId: user.id,
           },
         ])
         .execute();
@@ -74,9 +71,7 @@ export class HrService {
     }
   }
 
-  async cancelStudent(id: string, req: Request) {
-    const currentUserId = 'aac51c25-d16c-4adb-a230-bd12887bbc40'; //TODO dodać możliwość pobierania ID użytkownika wysyłającego requesta
-
+  async cancelStudent(id: string, user: User) {
     try {
       const { status, active, userType } = await User.createQueryBuilder('user')
         .select([
@@ -103,9 +98,9 @@ export class HrService {
       await HrReservations.createQueryBuilder('hrReservation')
         .delete()
         .from(HrReservations)
-        .where('studentId = :id AND hrId = :currentUserId', {
+        .where('studentId = :id AND hrId = :hrId', {
           id: id,
-          currentUserId: currentUserId,
+          hrId: user.id,
         })
         .execute();
 
