@@ -8,7 +8,7 @@ import { HrReservations } from './hr-reservations.entity';
 @Injectable()
 export class HrService {
   async reserveStudent(id: string, req: Request): Promise<StudentReservation> {
-    const currentUserId = 'aac51c25-d16c-4adb-a230-bd12887bbc40'; //TODO dodać możliwość pobierania ID użytkownika wysyłającego requesta
+    const currentUserId = 'e664ee8b-3287-4fea-b7f8-c8ff54c90198'; //TODO dodać możliwość pobierania ID użytkownika wysyłającego requesta
 
     try {
       const { status, active, userType } = await User.createQueryBuilder('user')
@@ -29,7 +29,7 @@ export class HrService {
         )
       )
         return {
-          message: 'Ta osoba nie może zostać zarezerwowania',
+          message: 'Ta osoba nie może zostać zarezerwowana',
           status: false,
         };
 

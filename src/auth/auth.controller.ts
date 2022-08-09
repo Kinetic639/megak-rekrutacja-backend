@@ -9,6 +9,7 @@ import {
   Query,
   Body,
   SetMetadata,
+  Patch,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
@@ -24,6 +25,7 @@ import {
 import { Activate } from './dto/activate.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AdminAuthGuard } from './auth-guards/admin-auth.guard';
+import { FilterDto } from '../student/dto/filter-student.dto';
 
 @Controller('/auth')
 export class AuthController {
@@ -52,14 +54,16 @@ export class AuthController {
     return this.authService.logout(res);
   }
 
-  @Post('/activate')
-  @UseGuards(AuthGuard('activate'))
+  @Patch('/activate?')
+  // @UseGuards(AuthGuard('activate'))
   async activate(
     @Req() { user }: { user: User },
     @Body() data: Activate,
+    @Query() query: any,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ActivateResponse> {
     const response = await this.authService.activate(user, data);
+    console.log(data);
     res.status(response.statusCode);
     return response;
   }

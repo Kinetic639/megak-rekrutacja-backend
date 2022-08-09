@@ -3,7 +3,7 @@ import { User } from './user.entity';
 
 import { MailService } from '../mail/mail.service';
 import { AuthService } from '../auth/auth.service';
-import { UserType } from '../types';
+import { Status, UserType } from '../types';
 
 @Injectable()
 export class UserService {
@@ -33,8 +33,10 @@ export class UserService {
         'user.monthsOfCommercialExp',
         'user.firstName',
         'user.lastName',
+        'user.status',
       ])
       .where('user.userType = :type', { type: UserType.STUDENT })
+      .where('user.status = :status', { status: Status.AVAILABLE })
       .getMany();
   }
 

@@ -6,18 +6,30 @@ const { v4: uuid } = require('uuid');
 const { hash } = require('bcrypt');
 
 (async () => {
-  const [, , email, password] = process.argv;
+  const [, , email, password, firstName, lastName] = process.argv;
   if (!email) {
     return console.error(`Write your email
         correct syntax 
-        npm run create:admin <email> <password>
+        npm run create:admin <email> <password> <firstName> <lastName>
         `);
   }
 
   if (!password) {
     return console.error(`Write your password
         correct syntax 
-        npm run create:admin <email> <password>
+        npm run create:admin <email> <password> <firstName> <lastName>
+        `);
+  }
+  if (!firstName) {
+    return console.error(`Write your first and last name
+        correct syntax 
+        npm run create:admin <email> <password> <firstName> <lastName>
+        `);
+  }
+  if (!lastName) {
+    return console.error(`Write your first and last name
+        correct syntax 
+        npm run create:admin <email> <password> <firstName> <lastName>
         `);
   }
 
@@ -31,8 +43,10 @@ const { hash } = require('bcrypt');
   });
 
   connection.execute(
-    'INSERT INTO  `user` (`id`, `email`, `password`, `active`, `userType`) VALUES(:id, :email, :password,:active, :userType )',
+    'INSERT INTO  `user` (`firstName`,`lastName`, `id`, `email`, `password`, `active`, `userType`) VALUES(:firstName, :lastName, :id, :email, :password,:active, :userType )',
     {
+      firstName,
+      lastName,
       id: uuid(),
       email,
       password: await hash(password, 10),

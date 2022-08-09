@@ -176,7 +176,7 @@ export class User extends BaseEntity {
     type: 'enum',
     nullable: true,
     enum: Status,
-    default: null,
+    default: Status.AVAILABLE,
   })
   status: Status | null;
 

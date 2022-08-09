@@ -74,7 +74,7 @@ export class AuthService {
       token: user.token,
     };
 
-    return this.jwtService.sign(payload, { expiresIn: '30s' });
+    return this.jwtService.sign(payload, { expiresIn: '10h' });
   }
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -98,9 +98,11 @@ export class AuthService {
     const token = this.generateToken(user);
     response.cookie('auth', token, {
       signed: true,
+      httpOnly: true,
     });
     response.cookie('user', user, {
       signed: true,
+      httpOnly: true,
     });
     return { message: 'Zalogowano', user, statusCode: 200 };
   }
@@ -119,7 +121,6 @@ export class AuthService {
   }
 
   async activate(user: User, data: Activate): Promise<ActivateResponse> {
-    console.log(data);
     if (
       !data.password ||
       !data.rePassword ||
