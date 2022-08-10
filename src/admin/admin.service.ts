@@ -165,7 +165,7 @@ export class AdminService {
     await this.mailService.sendMail(
       newHr.email,
       `Nadaj hasło do aplikacji rekrutacja MegaK`,
-      `<a href="http://localhost:3000/activte?token=${token}">Aktywuj</a>`,
+      `<a href="http://localhost:3000/activate?token=${token}">Aktywuj</a>`,
     );
 
     return {
