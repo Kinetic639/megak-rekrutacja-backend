@@ -11,6 +11,12 @@ import {
 } from '../types';
 import { Activate } from './dto/activate.dto';
 import { ActivateResponse } from '../types';
+import { MailService } from '../mail/mail.service';
+
+interface ValidPass {
+  message: string;
+  statusCode: number;
+}
 
 interface ValidPass {
   message: string;
@@ -21,6 +27,7 @@ interface ValidPass {
 export class AuthService {
   constructor(
     @Inject(forwardRef(() => UserService)) private userService: UserService,
+    @Inject(forwardRef(() => MailService)) private mailService: MailService,
     @Inject(JwtService) private jwtService: JwtService,
   ) {}
 
@@ -146,6 +153,62 @@ export class AuthService {
     return {
       statusCode: 202,
       message: 'Konto aktywowane poprawnie',
+    };
+  }
+
+  async sendEmailToReset(email: string, res: Response) {
+    const user = await this.userService.findUserByEmail(email);
+
+    if (!user) {
+      return {
+        statusCode: 404,
+        message: 'Użytkownik o tym emailu nie istnieje',
+      };
+    }
+
+    if (user.active === false) {
+      res.status(404);
+      return {
+        statusCode: 404,
+        message: 'Twoje konto nie zostało jeszcze aktywowane',
+      };
+    }
+
+    const token = this.generateToken(user);
+
+    await this.mailService.sendMail(
+      email,
+      `Reset hasła do aplikacji rekrutacja MegaK`,
+      `<a href="http://localhost:3000/reset?token=${token}">Reset hasła</a>`,
+    );
+
+    return { statusCode: 200, message: 'Email do resetowania hasła wysłany' };
+  }
+
+  async resetPassword(user: User, data: Activate) {
+    if (
+      !data.password ||
+      !data.rePassword ||
+      data.password !== data.rePassword
+    ) {
+      return {
+        message: 'Musisz uzupełnić i powtórzyć hasło i muszą być takie same',
+        statusCode: 404,
+      };
+    }
+
+    const validatePass: ValidPass = this.validatePassword(data.password);
+
+    if (validatePass.statusCode !== 200) {
+      return validatePass;
+    }
+
+    user.password = await hash(data.password, 10);
+    await user.save();
+
+    return {
+      statusCode: 202,
+      message: 'Hasło zresetowane poprawnie',
     };
   }
 }

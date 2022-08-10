@@ -6,7 +6,6 @@ import {
   Res,
   UseGuards,
   HttpCode,
-  Query,
   Body,
   SetMetadata,
   Patch,
@@ -64,6 +63,26 @@ export class AuthController {
   ): Promise<ActivateResponse> {
     const response = await this.authService.activate(user, data);
     console.log(data);
+    res.status(response.statusCode);
+    return response;
+  }
+
+  @Post('/send-reset-email')
+  async sendEmailToResetPassword(
+    @Body('email') email: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.authService.sendEmailToReset(email, res);
+  }
+
+  @Post('/reset')
+  @UseGuards(AuthGuard('reset'))
+  async resetPassword(
+    @Req() { user }: { user: User },
+    @Body() data: Activate,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<ActivateResponse> {
+    const response = await this.authService.resetPassword(user, data);
     res.status(response.statusCode);
     return response;
   }
