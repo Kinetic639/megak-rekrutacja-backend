@@ -1,4 +1,4 @@
-export class Activate {
+export interface Activate {
   password: string;
   rePassword: string;
 }

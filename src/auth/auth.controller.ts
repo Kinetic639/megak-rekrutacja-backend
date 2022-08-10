@@ -7,7 +7,6 @@ import {
   UseGuards,
   HttpCode,
   Body,
-  SetMetadata,
   Patch,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -53,16 +52,14 @@ export class AuthController {
     return this.authService.logout(res);
   }
 
-  @Patch('/activate?')
-  // @UseGuards(AuthGuard('activate'))
+  @Patch('/activate')
+  @UseGuards(AuthGuard('activate'))
   async activate(
     @Req() { user }: { user: User },
-    @Body() data: Activate,
-    @Query() query: any,
     @Res({ passthrough: true }) res: Response,
+    @Body() data: Activate,
   ): Promise<ActivateResponse> {
     const response = await this.authService.activate(user, data);
-    console.log(data);
     res.status(response.statusCode);
     return response;
   }
