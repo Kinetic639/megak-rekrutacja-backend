@@ -169,7 +169,7 @@ export class HrService {
       } else {
         return {
           message: `Ten student jest zarezerwowany do dnia: ${activeTo}`,
-          status: true,
+          status: false,
         };
       }
     } catch (error) {
