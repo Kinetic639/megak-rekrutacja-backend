@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Inject,
   Param,
   Patch,
@@ -7,7 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { HrService } from './hr.service';
-import { Request } from 'express';
 import { User } from '../user/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -36,5 +36,14 @@ export class HrController {
     @Req() { user }: { user: User },
   ): Promise<StudentReservation> {
     return this.hrService.cancelStudent(id, user);
+  }
+
+  @Get('/check/:id')
+  @UseGuards(AuthGuard('hr'))
+  async checkIsStudentReserved(
+    @Param('id') id: string,
+    @Req() { user }: { user: User },
+  ): Promise<StudentReservation> {
+    return this.hrService.checkIsStudentReserved(id, user);
   }
 }

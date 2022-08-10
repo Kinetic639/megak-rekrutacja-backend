@@ -19,6 +19,12 @@ export class HrReservations extends BaseEntity {
   })
   date: Date;
 
+  @Column({
+    nullable: false,
+    type: 'date',
+  })
+  activeTo: Date;
+
   @ManyToOne(() => User, (entity) => entity.studentReserved)
   @JoinColumn({ name: 'studentId' })
   studentId: string;
