@@ -12,6 +12,7 @@ import {
   CreateNewHr,
   createUsersResponse,
   ignoredStudentReason,
+  Status,
   UserType,
 } from '../types';
 
@@ -173,5 +174,19 @@ export class AdminService {
       message: `Nowy HR ${newHr.firstName} ${newHr.lastName} dodany do aplikacji`,
       hrId: newHr.id,
     };
+  }
+
+  async getHrList(): Promise<User[] | null> {
+    return await User.createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.email',
+        'user.firstName',
+        'user.lastName',
+        'user.company',
+        'user.maxReservedStudents',
+      ])
+      .where('user.userType = :type', { type: UserType.HR })
+      .getMany();
   }
 }

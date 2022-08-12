@@ -21,4 +21,9 @@ export class UserController {
   async getStudentsBasicData(): Promise<User[]> {
     return this.userService.getStudentsBasicData();
   }
+  @Get('/list/reserved')
+  // @UseGuards(AuthGuard('admin'))
+  async getReservedStudents(): Promise<User[]> {
+    return this.userService.getReservedStudents();
+  }
 }
