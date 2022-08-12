@@ -212,6 +212,12 @@ export class User extends BaseEntity {
   })
   portfolioUrls: string;
 
+  @Column({
+    nullable: true,
+    length: 255,
+  })
+  teamProjectUrls: string;
+
   @OneToMany(() => HrReservations, (entity) => entity.hrId)
   bookingHr: HrReservations[];
 
