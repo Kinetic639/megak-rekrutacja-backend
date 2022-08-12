@@ -1,7 +1,10 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { v4 as uuid } from 'uuid';
 import { AuthService } from '../auth/auth.service';
 import { MailService } from '../mail/mail.service';
 import { UserService } from '../user/user.service';
+
+//todo add hatml witch style to send email
 
 import { User } from '../user/user.entity';
 import {
@@ -9,6 +12,7 @@ import {
   CreateNewHr,
   createUsersResponse,
   ignoredStudentReason,
+  Status,
   UserType,
 } from '../types';
 
@@ -112,9 +116,18 @@ export class AdminService {
           newStudent.courseEngagement = courseEngagement;
           newStudent.projectDegree = projectDegree;
           newStudent.teamProjectDegree = teamProjectDegree;
-          newStudent.token = Math.random().toString();
+          newStudent.token = uuid();
 
           await newStudent.save();
+
+          const token = this.authService.generateToken(newStudent);
+
+          await this.mailService.sendMail(
+            newStudent.email,
+            `Nadaj hasło do aplikacji rekrutacja MegaK`,
+            `<a href="http://localhost:3000/activte?token=${token}">Aktywuj</a>`,
+          );
+
           results.studentsAdded.push(email);
         }
       }),
@@ -144,27 +157,36 @@ export class AdminService {
     newHr.firstName = hr.firstName;
     newHr.lastName = hr.lastName;
     newHr.maxReservedStudents = hr.maxReservedStudents;
-    newHr.token = Math.random().toString();
+    newHr.token = uuid();
 
     await newHr.save();
+
+    const token = this.authService.generateToken(newHr);
 
     await this.mailService.sendMail(
       newHr.email,
       `Nadaj hasło do aplikacji rekrutacja MegaK`,
-      `tu będzie trzeba wstawić treść wiadomości w html :)`,
+      `<a href="http://localhost:3000/activate?token=${token}">Aktywuj</a>`,
     );
-
-    this.authService.generateToken(newHr);
-    // todo add url and send email
 
     return {
       statusCode: 201,
-      message: `New HR ${newHr.firstName} ${newHr.lastName} successfully created`,
+      message: `Nowy HR ${newHr.firstName} ${newHr.lastName} dodany do aplikacji`,
       hrId: newHr.id,
     };
   }
 
-  async protected() {
-    return { message: 'Protected' };
+  async getHrList(): Promise<User[] | null> {
+    return await User.createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.email',
+        'user.firstName',
+        'user.lastName',
+        'user.company',
+        'user.maxReservedStudents',
+      ])
+      .where('user.userType = :type', { type: UserType.HR })
+      .getMany();
   }
 }

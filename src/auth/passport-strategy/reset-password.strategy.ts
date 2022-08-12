@@ -7,20 +7,20 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-
+import { JWT_SECRET } from 'src/config/secrets';
 import { UserService } from '../../user/user.service';
-
-import { JWT_SECRET } from '../../config/secrets';
-import { UserType } from '../../types';
-import { extractJwtFromCookie } from './extract-jwt-from-cookie';
+import { extractJwtFromQuery } from './extract-jwt-from-req-param';
 
 @Injectable()
-export class JwtStudentStrategy extends PassportStrategy(Strategy, 'student') {
+export class JwtResetPasswordStrategy extends PassportStrategy(
+  Strategy,
+  'reset',
+) {
   constructor(
     @Inject(forwardRef(() => UserService)) private userService: UserService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([extractJwtFromCookie]),
+      jwtFromRequest: ExtractJwt.fromExtractors([extractJwtFromQuery]),
       ignoreExpiration: false,
       secretOrKey: JWT_SECRET,
     });
@@ -29,16 +29,18 @@ export class JwtStudentStrategy extends PassportStrategy(Strategy, 'student') {
   async validate(payload: {
     email: string;
     id: string;
+    token: string;
     iat: number;
     exp: number;
   }) {
     const user = await this.userService.findUserByEmail(payload.email);
-    if (
-      !(user.userType === UserType.STUDENT || user.userType === UserType.ADMIN)
-    ) {
-      throw new HttpException('Brak dostępu do zasobów', HttpStatus.FORBIDDEN);
+    if (!user.active) {
+      throw new HttpException(
+        'Twoje konto nie jest jeszcze aktywne',
+        HttpStatus.FORBIDDEN,
+      );
     }
-    const { password, token, ...rest } = user;
-    return rest;
+
+    return user;
   }
 }

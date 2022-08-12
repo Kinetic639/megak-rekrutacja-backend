@@ -14,6 +14,7 @@ import { CreateNewHr, createUsersResponse } from '../types';
 import * as CSV from 'csv-string';
 import { UserService } from '../user/user.service';
 import { AdminService } from './admin.service';
+import { User } from '../user/user.entity';
 
 @Controller('admin')
 export class AdminController {
@@ -29,7 +30,7 @@ export class AdminController {
   }
 
   @Post('/create/students')
-  // @UseGuards(AuthGuard('admin'))
+  @UseGuards(AuthGuard('admin'))
   @UseInterceptors(FileInterceptor('file_asset'))
   async createStudents(
     @UploadedFile() file: any,
@@ -38,6 +39,12 @@ export class AdminController {
       output: 'objects',
     });
     return this.adminService.createdStudents(parsedCsv);
+  }
+
+  @Get('/list/hr')
+  @UseGuards(AuthGuard('admin'))
+  async getHrList(): Promise<User[] | null> {
+    return this.adminService.getHrList();
   }
 
   @Post('/create/hr')

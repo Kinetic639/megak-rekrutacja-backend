@@ -15,7 +15,7 @@ export class HrService {
 
       if (!(userType === UserType.STUDENT && active))
         return {
-          message: 'Ta osoba nie może zostać zarezerwowania',
+          message: 'Ta osoba nie może zostać zarezerwowana',
           status: false,
         };
 
