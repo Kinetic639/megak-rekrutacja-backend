@@ -1,9 +1,9 @@
 export enum WorkType {
-  'REMOTE' = 'remote',
-  'OFFICE' = 'office',
-  'MOVE' = 'ready to move',
-  'HYBRID' = 'hybrid',
-  'DEFAULT' = 'default',
+  'REMOTE' = 'Zdalnie',
+  'OFFICE' = 'Biuro',
+  'MOVE' = 'Gotowość do przeprowadzki',
+  'HYBRID' = 'Hybrydowo',
+  'DEFAULT' = 'Dowolne',
 }
 
 export const WorkTypeMap = [

@@ -1,9 +1,9 @@
 export enum ContractType {
-  'UOP' = 'uop',
-  'B2B' = 'b2b',
-  'UZ' = 'uz',
-  'UOD' = 'uod',
-  'DEFAULT' = 'default',
+  'UOP' = 'UoP',
+  'B2B' = 'B2B',
+  'UZ' = 'UZ',
+  'UOD' = 'UoD',
+  'DEFAULT' = 'Dowolny',
 }
 
 export const ContractTypeMap = [
