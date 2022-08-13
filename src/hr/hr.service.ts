@@ -1,15 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { User } from '../user/user.entity';
 import { Status, UserType } from '../types';
 import { StudentReservation } from './hr.controller';
 import { HrReservations } from './hr-reservations.entity';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class HrService {
+  constructor(
+    @Inject(forwardRef(() => MailService)) private mailService: MailService,
+  ) {}
+
   async reserveStudent(id: string, user: User): Promise<StudentReservation> {
     try {
       const { active, userType } = await User.createQueryBuilder('user')
-        .select(['user.active', 'user.maxReservedStudents', 'user.userType'])
+        .select(['user.active', 'user.userType'])
         .where('user.id = :id', { id: id })
         .getOne();
 
@@ -49,12 +54,6 @@ export class HrService {
           status: false,
         };
 
-      await User.createQueryBuilder('user')
-        .update(User)
-        .set({ status: Status.BEFORE_INTERVIEW })
-        .where('user.id = :id', { id: id })
-        .execute();
-
       const today = new Date();
       const activeTo = new Date();
       activeTo.setDate(today.getDate() + 10);
@@ -83,7 +82,7 @@ export class HrService {
   async cancelStudent(id: string, user: User) {
     try {
       const { active, userType } = await User.createQueryBuilder('user')
-        .select(['user.active', 'user.maxReservedStudents', 'user.userType'])
+        .select(['user.active', 'user.userType'])
         .where('user.id = :id', { id: id })
         .getOne();
 
@@ -132,9 +131,7 @@ export class HrService {
 
   async checkIsStudentReserved(id: string, user: User) {
     try {
-      const { activeTo, date } = await HrReservations.createQueryBuilder(
-        'hrReservation',
-      )
+      const response = await HrReservations.createQueryBuilder('hrReservation')
         .select(['hrReservation.activeTo', 'hrReservation.date'])
         .where(
           'hrReservation.studentId = :studentId AND hrReservation.hrId = :hrId',
@@ -145,14 +142,14 @@ export class HrService {
         )
         .getOne();
 
-      if (!activeTo) {
+      if (!response) {
         return {
           message: 'Taka rezerwacja nie istnieje.',
           status: true,
         };
       }
 
-      if (date > activeTo) {
+      if (response.date > response.activeTo) {
         await HrReservations.createQueryBuilder('hrReservation')
           .delete()
           .from(HrReservations)
@@ -168,10 +165,83 @@ export class HrService {
         };
       } else {
         return {
-          message: `Ten student jest zarezerwowany do dnia: ${activeTo}`,
+          message: `Ten student jest zarezerwowany do dnia: ${response.activeTo}`,
           status: false,
         };
       }
+    } catch (error) {
+      console.error(error);
+      return {
+        message: 'Przepraszamy, wystąpił błąd. Spróbuj ponownie później. ',
+        status: false,
+      };
+    }
+  }
+
+  async employStudent(id: string, user: User) {
+    try {
+      const { active, userType, email, firstName } =
+        await User.createQueryBuilder('user')
+          .select([
+            'user.active',
+            'user.userType',
+            'user.email',
+            'user.firstName',
+          ])
+          .where('user.id = :id', { id: id })
+          .getOne();
+
+      if (!(userType === UserType.STUDENT && active))
+        return {
+          message: 'Nie możesz zatrudnić tej osoby.',
+          status: false,
+        };
+
+      const actualStudent = await HrReservations.createQueryBuilder(
+        'hrReservation',
+      )
+        .where(
+          'hrReservation.hrId = :hrId AND hrReservation.studentId = :studentId',
+          { hrId: user.id, studentId: id },
+        )
+        .getCount();
+
+      if (actualStudent < 1)
+        return {
+          message: 'Nie możesz zatrudnić osoby, która nie jest zarezerwowana.',
+          status: false,
+        };
+
+      await HrReservations.createQueryBuilder('hrReservation')
+        .delete()
+        .from(HrReservations)
+        .where('studentId = :id AND hrId = :hrId', {
+          id: id,
+          hrId: user.id,
+        })
+        .execute();
+
+      await User.createQueryBuilder('user')
+        .update(User)
+        .set({ active: false })
+        .where('user.id = :id', { id: id })
+        .execute();
+
+      const { company } = await User.createQueryBuilder('hr')
+        .select(['hr.company'])
+        .where('hr.id = :hrId', { hrId: user.id })
+        .getOne();
+
+      await this.mailService.sendMail(
+        email,
+        'Gratulacje, zostałeś zatrudniony!',
+        `<h2>Dzień dobry ${firstName}!</h2><p>Zostałeś zatrudniony przez firmę: <strong>${company}</strong>. Dostęp do aplikacji został automatycznie zablokowany. Powodzenia programisto/programistko!</p><h3>Zespół MegaK</h3>`,
+      );
+
+      return {
+        message: 'Wybrany student został oznaczony jako zatrudniony. ',
+        status: true,
+      };
     } catch (error) {
       console.error(error);
       return {

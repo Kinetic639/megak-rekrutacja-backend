@@ -4,6 +4,7 @@ import {
   Inject,
   Param,
   Patch,
+  Post,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -36,6 +37,15 @@ export class HrController {
     @Req() { user }: { user: User },
   ): Promise<StudentReservation> {
     return this.hrService.cancelStudent(id, user);
+  }
+
+  @Patch('/employ/:id')
+  @UseGuards(AuthGuard('hr'))
+  async employStudent(
+    @Param('id') id: string,
+    @Req() { user }: { user: User },
+  ): Promise<StudentReservation> {
+    return this.hrService.employStudent(id, user);
   }
 
   @Get('/check/:id')
