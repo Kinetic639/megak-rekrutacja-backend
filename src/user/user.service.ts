@@ -37,7 +37,10 @@ export class UserService {
         'user.status',
       ])
       .where('user.userType = :type', { type: UserType.STUDENT })
-      .where('user.status = :status', { status: Status.AVAILABLE })
+      .where('user.status = :status OR user.status = :status2 ', {
+        status: Status.AVAILABLE,
+        status2: Status.BEFORE_INTERVIEW,
+      })
       .getMany();
   }
 

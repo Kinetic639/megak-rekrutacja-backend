@@ -8,7 +8,7 @@ import { HrReservations } from './hr-reservations.entity';
 @Injectable()
 export class HrService {
   async reserveStudent(id: string, req: Request): Promise<StudentReservation> {
-    const currentUserId = 'e664ee8b-3287-4fea-b7f8-c8ff54c90198'; //TODO dodać możliwość pobierania ID użytkownika wysyłającego requesta
+    const currentUserId = req.body.hrID;
 
     try {
       const { status, active, userType } = await User.createQueryBuilder('user')
@@ -65,6 +65,10 @@ export class HrService {
           },
         ])
         .execute();
+      return {
+        message: 'Pomyślnie udało się zarezerwowac studenta.',
+        status: true,
+      };
     } catch (error) {
       console.error(error);
       return {
