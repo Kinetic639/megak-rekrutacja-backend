@@ -12,8 +12,14 @@ export class UserController {
     return { user: 'user' };
   }
   @Get('/:email')
-  async findUserByEmail(@Param() email: string) {
+  // @UseGuards(AuthGuard('hr'))
+  async findUserByEmail(@Param() email: string): Promise<User | null> {
     return this.userService.findUserByEmail(email);
+  }
+  @Get('/find-by/id/:id')
+  // @UseGuards(AuthGuard('admin'))
+  async findUserById(@Param('id') id: string) {
+    return this.userService.findUserById(id);
   }
 
   @Get('/list/basic')

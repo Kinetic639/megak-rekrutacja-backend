@@ -13,7 +13,8 @@ export class UserService {
   ) {}
 
   async findUserByEmail(email: string): Promise<User | null> {
-    return await User.findOne({ where: { email } });
+    console.log(email);
+    return await User.findOneOrFail({ where: { email } });
   }
 
   async getStudentsBasicData(): Promise<User[] | null> {
@@ -67,5 +68,9 @@ export class UserService {
       .where('user.userType = :type', { type: UserType.STUDENT })
       .where('user.status = :status', { status: Status.BEFORE_INTERVIEW })
       .getMany();
+  }
+
+  async findUserById(id: string): Promise<User | null> {
+    return await User.findOneOrFail({ where: { id } });
   }
 }
