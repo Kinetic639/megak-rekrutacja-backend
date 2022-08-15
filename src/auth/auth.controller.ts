@@ -59,7 +59,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @Body() data: Activate,
   ): Promise<ActivateResponse> {
-    const response = await this.authService.activate(user, data);
+    const response = await this.authService.activate(user, data, res);
     res.status(response.statusCode);
     return response;
   }

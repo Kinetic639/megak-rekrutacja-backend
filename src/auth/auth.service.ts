@@ -127,7 +127,11 @@ export class AuthService {
     };
   }
 
-  async activate(user: User, data: Activate): Promise<ActivateResponse> {
+  async activate(
+    user: User,
+    data: Activate,
+    res: Response,
+  ): Promise<ActivateResponse> {
     if (
       !data.password ||
       !data.rePassword ||
@@ -178,8 +182,10 @@ export class AuthService {
 
     await this.mailService.sendMail(
       email,
-      `Reset hasła do aplikacji rekrutacja MegaK`,
-      `<a href="http://localhost:3000/reset?token=${token}">Reset hasła</a>`,
+      'Reset hasła do aplikacji rekrutacja MegaK',
+      `http://localhost:3000/reset?token=${token}`,
+      'Resetuj hasło w aplikaji MegaK rekrutacja',
+      'Resetuj hasło',
     );
 
     return { statusCode: 200, message: 'Email do resetowania hasła wysłany' };

@@ -124,8 +124,10 @@ export class AdminService {
 
           await this.mailService.sendMail(
             newStudent.email,
-            `Nadaj hasło do aplikacji rekrutacja MegaK`,
-            `<a href="http://localhost:3000/activte?token=${token}">Aktywuj</a>`,
+            'Nadaj hasło do aplikacji rekrutacja MegaK',
+            `http://localhost:3000/activate?token=${token}`,
+            'Aktywuj swoje konto w aplikacji MegaK Rekrutcja',
+            'Aktywuj konto',
           );
 
           results.studentsAdded.push(email);
@@ -165,8 +167,10 @@ export class AdminService {
 
     await this.mailService.sendMail(
       newHr.email,
-      `Nadaj hasło do aplikacji rekrutacja MegaK`,
-      `<a href="http://localhost:3000/activate?token=${token}">Aktywuj</a>`,
+      'Nadaj hasło do aplikacji rekrutacja MegaK',
+      `http://localhost:3000/activate?token=${token}`,
+      `${newHr.firstName} ${newHr.lastName} aktywuj swoje konto w aplikacji MegaK Rekrutcja`,
+      'Aktywuj konto',
     );
 
     return {
