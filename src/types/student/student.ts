@@ -18,12 +18,12 @@ export interface filterStudents extends Omit<csvStudent, 'email'> {
 }
 
 export enum ignoredStudentReason {
-  EMAIL_INVALID = 'Invalid email.',
-  NOTHING_TO_UPDATE = 'Nothing to update.',
-  COMPLETION_INVALID = 'courseCompletion score is invalid',
-  ENGAGEMENT_INVALID = 'CourseEngagement score is invalid.',
-  PROJECT_DEGREE_INVALID = 'ProjectDegree score is invalid.',
-  TEAM_PROJECT_DEGREE_INVALID = 'teamProjectDegree score is invalid.',
+  EMAIL_INVALID = 'Niepoprawny email',
+  NOTHING_TO_UPDATE = 'Brak zmian do wprowadzenia',
+  COMPLETION_INVALID = 'Błędna ocena w courseCompletion',
+  ENGAGEMENT_INVALID = 'Błędna ocena w CourseEngagement',
+  PROJECT_DEGREE_INVALID = 'Błędna ocena w ProjectDegree',
+  TEAM_PROJECT_DEGREE_INVALID = 'Błędna ocena w teamProjectDegree',
 }
 
 interface ignoredStudent {

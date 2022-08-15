@@ -30,14 +30,20 @@ export class AdminService {
 
   compareObjects(obj1, obj2): boolean {
     for (const [key, value] of Object.entries(obj1)) {
-      if (value !== obj2[key]) {
-        return false;
+      if (key === 'bonusProjectUrls' || key === 'email') {
+        if (value !== obj2[key]) {
+          return false;
+        }
+      } else {
+        if (Number(value) !== Number(obj2[key])) {
+          return false;
+        }
       }
     }
     return true;
   }
 
-  async createdStudents(studentsArr): Promise<createUsersResponse> {
+  async createdStudents(studentsArr) {
     const results: createUsersResponse = {
       studentsIgnored: [],
       studentsUpdated: [],
@@ -52,6 +58,7 @@ export class AdminService {
           email,
           projectDegree,
           teamProjectDegree,
+          bonusProjectUrls,
         } = student;
         const {
           EMAIL_INVALID,
@@ -64,7 +71,17 @@ export class AdminService {
 
         const currUser = await this.userService.findUserByEmail(email);
 
-        if (!this.validateEmail(student.email)) {
+        if (currUser) {
+          if (!this.compareObjects(student, currUser)) {
+            await User.update(currUser.id, student);
+            results.studentsUpdated.push(email);
+          } else {
+            results.studentsIgnored.push({
+              email: email,
+              reason: NOTHING_TO_UPDATE,
+            });
+          }
+        } else if (!this.validateEmail(student.email)) {
           results.studentsIgnored.push({
             email: student.email,
             reason: EMAIL_INVALID,
@@ -98,16 +115,6 @@ export class AdminService {
             email: email,
             reason: TEAM_PROJECT_DEGREE_INVALID,
           });
-        } else if (currUser) {
-          if (!this.compareObjects(student, currUser)) {
-            await User.update(currUser.id, student);
-            results.studentsUpdated.push(email);
-          } else {
-            results.studentsIgnored.push({
-              email: email,
-              reason: NOTHING_TO_UPDATE,
-            });
-          }
         } else {
           const newStudent = new User();
           newStudent.email = email;
@@ -116,23 +123,23 @@ export class AdminService {
           newStudent.courseEngagement = courseEngagement;
           newStudent.projectDegree = projectDegree;
           newStudent.teamProjectDegree = teamProjectDegree;
+          newStudent.bonusProjectUrls = bonusProjectUrls;
           newStudent.token = uuid();
 
           await newStudent.save();
 
           const token = this.authService.generateToken(newStudent);
 
-          await this.mailService.sendMail(
-            newStudent.email,
-            `Nadaj hasło do aplikacji rekrutacja MegaK`,
-            `<a href="http://localhost:3000/activte?token=${token}">Aktywuj</a>`,
-          );
+          // await this.mailService.sendMail(
+          //   newStudent.email,
+          //   `Nadaj hasło do aplikacji rekrutacja MegaK`,
+          //   `<a href="http://localhost:3000/activte?token=${token}">Aktywuj</a>`,
+          // );
 
           results.studentsAdded.push(email);
         }
       }),
     );
-
     return results;
   }
 

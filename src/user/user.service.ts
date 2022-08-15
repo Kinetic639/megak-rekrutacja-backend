@@ -13,8 +13,7 @@ export class UserService {
   ) {}
 
   async findUserByEmail(email: string): Promise<User | null> {
-    console.log(email);
-    return await User.findOneOrFail({ where: { email } });
+    return await User.findOne({ where: { email } });
   }
 
   async getStudentsBasicData(): Promise<User[] | null> {

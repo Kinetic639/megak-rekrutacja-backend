@@ -32,9 +32,7 @@ export class AdminController {
   @Post('/create/students')
   @UseGuards(AuthGuard('admin'))
   @UseInterceptors(FileInterceptor('file_asset'))
-  async createStudents(
-    @UploadedFile() file: any,
-  ): Promise<createUsersResponse> {
+  async createStudents(@UploadedFile() file: any) {
     const parsedCsv = CSV.parse(file.buffer.toString(), {
       output: 'objects',
     });
