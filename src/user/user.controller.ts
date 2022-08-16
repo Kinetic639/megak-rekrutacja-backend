@@ -1,4 +1,11 @@
-import { Controller, Get, Inject, Param, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from './user.entity';
@@ -30,13 +37,13 @@ export class UserController {
 
   @Get('/list/basic')
   // @UseGuards(AuthGuard('admin'))
-  async getStudentsBasicData(): Promise<User[]> {
-    return this.userService.getStudentsBasicData();
+  async getStudentsBasicData(@Body() hrId: string): Promise<User[]> {
+    return this.userService.getStudentsBasicData(hrId);
   }
 
   @Get('/list/reserved')
   // @UseGuards(AuthGuard('admin'))
-  async getReservedStudents(): Promise<User[]> {
-    return this.userService.getReservedStudents();
+  async getReservedStudents(@Body() hrId: string): Promise<User[]> {
+    return this.userService.getReservedStudents(hrId);
   }
 }
