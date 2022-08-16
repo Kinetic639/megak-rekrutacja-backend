@@ -17,6 +17,32 @@ export interface filterStudents extends Omit<csvStudent, 'email'> {
   monthsOfCommercialExp: number;
 }
 
+export interface updateStudent {
+  id: string;
+  firstName: string;
+  lastName: string;
+  tel: number;
+  bio: string;
+  githubUsername: string;
+  expectedTypeWork: WorkType;
+  targetWorkCity: string;
+  expectedContractType: ContractType;
+  canTakeApprenticeship: string | boolean;
+  expectedSalary: number;
+  monthsOfCommercialExp: number;
+  education: string;
+  workExperience: string;
+  courses: string;
+  portfolioUrls: string;
+  teamProjectUrls: string;
+}
+
+export interface updateStudentResponse {
+  statusCode: number;
+  message: string;
+  studentId?: string;
+}
+
 export enum ignoredStudentReason {
   EMAIL_INVALID = 'Invalid email.',
   NOTHING_TO_UPDATE = 'Nothing to update.',
