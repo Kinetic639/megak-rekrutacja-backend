@@ -10,6 +10,10 @@ export class HrService {
   async reserveStudent(id: string, req: Request): Promise<StudentReservation> {
     const currentUserId = req.body.hrID;
 
+    const addDays = 10;
+    const today = new Date();
+    const datePlus = today.setDate(today.getDate() + addDays);
+
     try {
       const { status, active, userType } = await User.createQueryBuilder('user')
         .select([
@@ -59,7 +63,7 @@ export class HrService {
         .into(HrReservations)
         .values([
           {
-            date: new Date(),
+            date: new Date(datePlus),
             studentId: id,
             hrId: currentUserId,
           },
