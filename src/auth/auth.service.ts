@@ -39,14 +39,14 @@ export class AuthService {
       };
     }
 
-    if (!/(?=.[A-Z])/.test(password)) {
+    if (!/(?=.*[A-Z])/.test(password)) {
       return {
         message: 'Hasło musi zawierać conajmniej jedną dużą litere',
         statusCode: 404,
       };
     }
 
-    if (!/(?=.[a-z])/.test(password)) {
+    if (!/(?=.*[a-z])/.test(password)) {
       return {
         message: 'Hasło musi zawierać conajmniej jedną małą litere',
         statusCode: 404,
