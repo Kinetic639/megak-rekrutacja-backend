@@ -58,7 +58,7 @@ export class UserService {
         'user.status',
       ])
       .where('user.userType = :type', { type: UserType.STUDENT })
-      .where({ id: Not(In(await this.getReservedStudentsIds(id))) })
+      .andWhere({ id: Not(In(await this.getReservedStudentsIds(id))) })
       .getMany();
   }
 
@@ -87,7 +87,17 @@ export class UserService {
         'user.status',
       ])
       .where('user.userType = :type', { type: UserType.STUDENT })
-      .where({ id: In(await this.getReservedStudentsIds(id)) })
+      .andWhere({ id: In(await this.getReservedStudentsIds(id)) })
+      .getMany();
+  }
+
+  async getReservedStudentsDate(id): Promise<HrReservations[] | null> {
+    const { hrId } = id;
+    return await HrReservations.createQueryBuilder('hr_reservations')
+      .innerJoinAndSelect('hr_reservations.studentId', 'id')
+      // .leftJoinAndSelect('hr_reservations.studentId', 'studentId')
+      .select(['hr_reservations.date', 'date'])
+      .where('hr_reservations.hrId = :hrId', { hrId: hrId })
       .getMany();
   }
 
