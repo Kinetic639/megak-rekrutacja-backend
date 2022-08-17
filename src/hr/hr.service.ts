@@ -48,12 +48,6 @@ export class HrService {
           status: false,
         };
 
-      await User.createQueryBuilder('user')
-        .update(User)
-        .set({ status: Status.BEFORE_INTERVIEW })
-        .where('user.id = :id', { id: id })
-        .execute();
-
       await HrReservations.createQueryBuilder('hrReservation')
         .insert()
         .into(HrReservations)
@@ -146,13 +140,7 @@ export class HrService {
         .where('user.id = :id', { id: id })
         .getOne();
 
-      if (
-        !(
-          status === Status.BEFORE_INTERVIEW &&
-          userType === UserType.STUDENT &&
-          active
-        )
-      )
+      if (!(userType === UserType.STUDENT && active))
         return {
           message: 'Ta osoba nie może zostać zatrudniona.',
           status: false,
@@ -167,7 +155,7 @@ export class HrService {
       await HrReservations.createQueryBuilder('hrReservation')
         .delete()
         .from(HrReservations)
-        .where('studentId = :id AND hrId = :currentUserId', {
+        .where('studentId = :id ', {
           id: id,
           currentUserId: currentUserId,
         })
