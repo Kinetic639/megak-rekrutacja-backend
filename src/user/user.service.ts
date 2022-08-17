@@ -93,4 +93,14 @@ export class UserService {
   async findUserById(id: string): Promise<User | null> {
     return await User.findOneOrFail({ where: { id } });
   }
+
+  async getReservedStudentsDate(id): Promise<HrReservations[] | null> {
+    const { hrId } = id;
+    return await HrReservations.createQueryBuilder('hr_reservations')
+      .innerJoinAndSelect('hr_reservations.studentId', 'id')
+      // .leftJoinAndSelect('hr_reservations.studentId', 'studentId')
+      .select(['hr_reservations.date', 'date'])
+      .where('hr_reservations.hrId = :hrId', { hrId: hrId })
+      .getMany();
+  }
 }

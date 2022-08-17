@@ -11,6 +11,7 @@ import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from './user.entity';
 import { StudentService } from '../student/student.service';
+import { HrReservations } from '../hr/hr-reservations.entity';
 
 @Controller('user')
 export class UserController {
@@ -46,5 +47,12 @@ export class UserController {
   // @UseGuards(AuthGuard('admin'))
   async getReservedStudents(@Body() hrId: string): Promise<User[]> {
     return this.userService.getReservedStudents(hrId);
+  }
+  @Post('/list/reservedDate')
+  // @UseGuards(AuthGuard('admin'))
+  async getReservedStudentsDate(
+    @Body() hrId: string,
+  ): Promise<HrReservations[]> {
+    return this.userService.getReservedStudentsDate(hrId);
   }
 }
