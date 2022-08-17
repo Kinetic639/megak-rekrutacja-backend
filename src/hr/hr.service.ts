@@ -90,13 +90,7 @@ export class HrService {
         .where('user.id = :id', { id: id })
         .getOne();
 
-      if (
-        !(
-          status === Status.BEFORE_INTERVIEW &&
-          userType === UserType.STUDENT &&
-          active
-        )
-      )
+      if (!(userType === UserType.STUDENT && active))
         return {
           message: 'Nie możesz wycofać rezerwacji tego kursanta.',
           status: false,
