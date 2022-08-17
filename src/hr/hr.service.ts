@@ -79,7 +79,7 @@ export class HrService {
   }
 
   async cancelStudent(id: string, req: Request) {
-    const currentUserId = 'aac51c25-d16c-4adb-a230-bd12887bbc40'; //TODO dodać możliwość pobierania ID użytkownika wysyłającego requesta
+    const currentUserId = req.body.hrID;
 
     try {
       const { status, active, userType } = await User.createQueryBuilder('user')
@@ -121,6 +121,60 @@ export class HrService {
 
       return {
         message: 'Wybrany kursant jest ponownie dostępny. ',
+        status: true,
+      };
+    } catch (error) {
+      console.error(error);
+      return {
+        message: 'Przepraszamy, wystąpił błąd. Spróbuj ponownie później. ',
+        status: false,
+      };
+    }
+  }
+
+  async hiredStudent(id: string, req: Request): Promise<StudentReservation> {
+    const currentUserId = req.body.hrID;
+
+    try {
+      const { status, active, userType } = await User.createQueryBuilder('user')
+        .select([
+          'user.status',
+          'user.active',
+          'user.maxReservedStudents',
+          'user.userType',
+        ])
+        .where('user.id = :id', { id: id })
+        .getOne();
+
+      if (
+        !(
+          status === Status.BEFORE_INTERVIEW &&
+          userType === UserType.STUDENT &&
+          active
+        )
+      )
+        return {
+          message: 'Ta osoba nie może zostać zatrudniona.',
+          status: false,
+        };
+
+      await User.createQueryBuilder('user')
+        .update(User)
+        .set({ status: Status.IN_INTERVIEW, active: false })
+        .where('user.id = :id', { id: id })
+        .execute();
+
+      await HrReservations.createQueryBuilder('hrReservation')
+        .delete()
+        .from(HrReservations)
+        .where('studentId = :id AND hrId = :currentUserId', {
+          id: id,
+          currentUserId: currentUserId,
+        })
+        .execute();
+
+      return {
+        message: 'Pomyślnie udało się zatrudnić studenta.',
         status: true,
       };
     } catch (error) {
