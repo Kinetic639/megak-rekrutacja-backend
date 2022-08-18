@@ -5,7 +5,7 @@ import { MailService } from '../mail/mail.service';
 import { AuthService } from '../auth/auth.service';
 import { UserType } from '../types';
 import { HrReservations } from '../hr/hr-reservations.entity';
-import { In, Not } from 'typeorm';
+import { In, LessThan, Not } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -38,6 +38,13 @@ export class UserService {
   };
 
   async getStudentsBasicData(id): Promise<User[] | null> {
+    const findOld = await HrReservations.find({
+      where: {
+        date: LessThan(new Date()),
+      },
+    });
+    await HrReservations.remove(findOld);
+
     return await User.createQueryBuilder('user')
       .select([
         'user.id',
