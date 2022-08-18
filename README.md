@@ -1,1 +1,0 @@
-# megak-rekrutacja-backend
