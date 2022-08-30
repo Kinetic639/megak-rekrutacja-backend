@@ -64,7 +64,7 @@ export class HrService {
         ])
         .execute();
       return {
-        message: 'Pomyślnie udało się zarezerwowac studenta.',
+        message: 'Pomyślnie udało się zarezerwować studenta.',
         status: true,
       };
     } catch (error) {

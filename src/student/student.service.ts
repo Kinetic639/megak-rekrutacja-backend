@@ -6,6 +6,7 @@ import {
   ScoreMap,
   updateStudent,
   updateStudentResponse,
+  UserType,
   WorkTypeMap,
 } from '../types';
 import { Between, In, IsNull, MoreThanOrEqual, Not } from 'typeorm';
@@ -17,50 +18,76 @@ export class StudentService {
     @Inject(forwardRef(() => UserService)) private userService: UserService,
   ) {}
 
-  async findByFilter(query: FilterDto) {
-    const {
-      expectedContractType,
-      expectedTypeWork,
-      expectedSalaryFrom,
-      expectedSalaryTo,
-      courseCompletion,
-      courseEngagement,
-      monthsOfCommercialExp,
-      teamProjectDegree,
-      projectDegree,
-      canTakeApprenticeship,
-    } = query;
-
-    //Can't finde better solution to find every elements if query is null
-    //have to create arrays of enums
-    //if you got better solution I'm open for suggestions
-    console.log(
-      expectedContractType,
-      expectedTypeWork,
-      expectedSalaryFrom,
-      expectedSalaryTo,
-      courseCompletion,
-      courseEngagement,
-      monthsOfCommercialExp,
-      teamProjectDegree,
-      projectDegree,
-      canTakeApprenticeship,
-    );
-    return await User.find({
-      where: {
-        expectedContractType: In([expectedContractType ?? ContractTypeMap]),
-        expectedTypeWork: In([expectedTypeWork ?? WorkTypeMap]),
-        //if expectedSalary in db is null will not show (could be use to omit admin & hr filter)
-        expectedSalary: Between(expectedSalaryFrom, expectedSalaryTo),
-        courseCompletion: In(courseCompletion ?? ScoreMap),
-        courseEngagement: In(courseEngagement ?? ScoreMap),
-        monthsOfCommercialExp: MoreThanOrEqual(monthsOfCommercialExp ?? 0),
-        teamProjectDegree: In(teamProjectDegree ?? ScoreMap),
-        projectDegree: MoreThanOrEqual(projectDegree ?? 0),
-        canTakeApprenticeship: canTakeApprenticeship ?? Not(IsNull()),
-      },
-    });
-  }
+  // async findByFilter(query: FilterDto) {
+  //   const {
+  //     expectedContractType,
+  //     expectedTypeWork,
+  //     expectedSalaryFrom,
+  //     expectedSalaryTo,
+  //     courseCompletion,
+  //     courseEngagement,
+  //     monthsOfCommercialExp,
+  //     teamProjectDegree,
+  //     projectDegree,
+  //     canTakeApprenticeship,
+  //   } = query;
+  //
+  //   let queryResult = await User.createQueryBuilder('user')
+  //     .select([
+  //       'user.id',
+  //       'user.email',
+  //       'user.courseCompletion',
+  //       'user.courseEngagement',
+  //       'user.projectDegree',
+  //       'user.teamProjectDegree',
+  //       'user.expectedTypeWork',
+  //       'user.targetWorkCity',
+  //       'user.expectedContractType',
+  //       'user.expectedSalary',
+  //       'user.canTakeApprenticeship',
+  //       'user.monthsOfCommercialExp',
+  //       'user.firstName',
+  //       'user.lastName',
+  //       'user.status',
+  //       'user.active',
+  //     ])
+  //     .where('user.userType = :type', { type: UserType.STUDENT })
+  //     .andWhere('user.active = :active', { active: true });
+  //   if (courseCompletion) {
+  //     queryResult = queryResult.andWhere(
+  //       'user.courseCompletion IN (:...courseCompletion)',
+  //       {
+  //         courseCompletion,
+  //       },
+  //     );
+  //   }
+  //   if (courseEngagement) {
+  //     queryResult = queryResult.andWhere(
+  //       'user.courseEngagement IN (:...courseEngagement)',
+  //       {
+  //         courseEngagement,
+  //       },
+  //     );
+  //   }
+  //   if (teamProjectDegree) {
+  //     queryResult = queryResult.andWhere(
+  //       'user.teamProjectDegree IN (:...teamProjectDegree)',
+  //       {
+  //         teamProjectDegree,
+  //       },
+  //     );
+  //   }
+  //   if (projectDegree) {
+  //     queryResult = queryResult.andWhere(
+  //       'user.projectDegree IN (:...projectDegree)',
+  //       {
+  //         projectDegree,
+  //       },
+  //     );
+  //   }
+  //
+  //   return await queryResult.getMany();
+  // }
 
   async updateStudent(student: updateStudent): Promise<updateStudentResponse> {
     const oldStudent = await this.userService.findUserById(student.id);

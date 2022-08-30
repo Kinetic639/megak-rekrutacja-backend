@@ -6,12 +6,14 @@ import {
   Param,
   UseGuards,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from './user.entity';
 import { StudentService } from '../student/student.service';
 import { HrReservations } from '../hr/hr-reservations.entity';
+import { FilterDto } from '../student/dto/filter-student.dto';
 
 @Controller('user')
 export class UserController {
@@ -36,11 +38,19 @@ export class UserController {
   async findUserById(@Param('id') id: string) {
     return this.userService.findUserById(id);
   }
-
-  @Post('/list/basic')
+  @Get('/reservations/all')
   // @UseGuards(AuthGuard('admin'))
-  async getStudentsBasicData(@Body() hrId: string): Promise<User[]> {
-    return this.userService.getStudentsBasicData(hrId);
+  async getAllReservations() {
+    return this.userService.getAllReservations();
+  }
+
+  @Post('/list/basic?')
+  // @UseGuards(AuthGuard('admin'))
+  async getStudentsBasicData(
+    @Body() hrId: string,
+    @Query() query: FilterDto,
+  ): Promise<User[]> {
+    return this.userService.getStudentsBasicData(hrId, query);
   }
 
   @Post('/list/reserved')
@@ -48,6 +58,7 @@ export class UserController {
   async getReservedStudents(@Body() hrId: string): Promise<User[]> {
     return this.userService.getReservedStudents(hrId);
   }
+
   @Post('/list/reservedDate')
   // @UseGuards(AuthGuard('admin'))
   async getReservedStudentsDate(

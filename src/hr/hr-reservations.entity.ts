@@ -19,11 +19,11 @@ export class HrReservations extends BaseEntity {
   })
   date: Date;
 
-  @ManyToOne(() => User, (entity) => entity.studentReserved)
+  @ManyToOne(() => User, (entity) => entity.studentReserved, { eager: true })
   @JoinColumn({ name: 'studentId' })
   studentId: string;
 
-  @ManyToOne(() => User, (entity) => entity.bookingHr)
+  @ManyToOne(() => User, (entity) => entity.bookingHr, { eager: true })
   @JoinColumn({ name: 'hrId' })
   hrId: string;
 }

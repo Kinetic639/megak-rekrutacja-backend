@@ -22,10 +22,10 @@ export class StudentController {
     return { student: 'student path' };
   }
 
-  @Get('/student?')
-  async filter(@Query() query: FilterDto): Promise<User[] | null> {
-    return await this.studentService.findByFilter(query);
-  }
+  // @Get('/student?')
+  // async filter(@Query() query: FilterDto): Promise<User[] | null> {
+  //   return await this.studentService.findByFilter(query);
+  // }
 
   @Patch('/update')
   @UseGuards(AuthGuard('student'))

@@ -15,10 +15,10 @@ export class FilterDto {
   @IsArray()
   courseEngagement;
 
-  @Transform(({ value }) => toNumber(value, { default: 1, min: 1, max: 5 }))
-  @IsNumber()
+  @Transform(({ value }) => value.split(','))
   @IsOptional()
-  projectDegree: number;
+  @IsArray()
+  projectDegree;
 
   @Transform(({ value }) => value.split(','))
   @IsOptional()
@@ -28,22 +28,22 @@ export class FilterDto {
   @Transform(({ value }) => toNumber(value, { default: 1, min: 1, max: 50000 }))
   @IsNumber()
   @IsOptional()
-  expectedSalaryFrom = 0;
+  expectedSalaryFrom;
 
   @Transform(({ value }) => toNumber(value, { default: 1, min: 1, max: 50000 }))
   @IsNumber()
   @IsOptional()
-  expectedSalaryTo = 50000;
+  expectedSalaryTo;
 
   @Transform(({ value }) => value.split(','))
   @IsOptional()
   @IsArray()
-  expectedContractType: ContractType;
+  expectedContractType;
 
   @Transform(({ value }) => value.split(','))
   @IsOptional()
   @IsArray()
-  expectedTypeWork: WorkType;
+  expectedTypeWork;
 
   @Transform(({ value }) => toBoolean(value))
   @IsBoolean()
@@ -53,5 +53,5 @@ export class FilterDto {
   @Transform(({ value }) => toNumber(value, { default: 0, min: 0, max: 255 }))
   @IsNumber()
   @IsOptional()
-  monthsOfCommercialExp = 0;
+  monthsOfCommercialExp;
 }
