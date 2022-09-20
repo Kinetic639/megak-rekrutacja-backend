@@ -1,15 +1,13 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { User } from './user.entity';
-import {
-  CreateHrResponse,
-  CreateNewHr,
-  createUsersResponse,
-  ignoredStudentReason,
-  UserType,
-} from '../types';
 
 import { MailService } from '../mail/mail.service';
 import { AuthService } from '../auth/auth.service';
+import { ContractType, Status, UserType, WorkType } from '../types';
+import { HrReservations } from '../hr/hr-reservations.entity';
+import { In, MoreThan, MoreThanOrEqual, Not } from 'typeorm';
+import { FilterDto } from '../student/dto/filter-student.dto';
+import { log } from 'util';
 
 @Injectable()
 export class UserService {
@@ -18,162 +16,223 @@ export class UserService {
     @Inject(MailService) private mailService: MailService,
   ) {}
 
-  validateEmail(email: string): boolean {
-    return email.includes('@');
-  }
-  compareObjects(obj1, obj2) {
-    for (const [key, value] of Object.entries(obj1)) {
-      if (value !== obj2[key]) {
-        return false;
-      }
-    }
-    return true;
-  }
   async findUserByEmail(email: string): Promise<User | null> {
     return await User.findOne({ where: { email } });
   }
 
-  async createdStudents(studentsArr): Promise<createUsersResponse> {
-    const results: createUsersResponse = {
-      studentsIgnored: [],
-      studentsUpdated: [],
-      studentsAdded: [],
-    };
+  getReservedStudentsIds = async (id): Promise<string[]> => {
+    const { hrId } = id;
+    const reservations = await HrReservations.createQueryBuilder(
+      'hr_reservations',
+    )
+      .innerJoinAndSelect('hr_reservations.studentId', 'id')
+      .where('hr_reservations.hrId = :hrId', { hrId: hrId })
+      .getMany();
 
-    await Promise.all(
-      studentsArr.map(async (student) => {
-        const {
-          courseEngagement,
-          courseCompletion,
-          email,
-          projectDegree,
-          teamProjectDegree,
-          bonusProjectUrls,
-        } = student;
-        const {
-          EMAIL_INVALID,
-          TEAM_PROJECT_DEGREE_INVALID,
-          ENGAGEMENT_INVALID,
-          PROJECT_DEGREE_INVALID,
-          COMPLETION_INVALID,
-          NOTHING_TO_UPDATE,
-        } = ignoredStudentReason;
+    const arrOfReservedStudents = [];
+    arrOfReservedStudents.push(reservations.map((value) => value.studentId));
+    const arrOfReservedStudentsId = [];
+    for (const key in arrOfReservedStudents[0]) {
+      arrOfReservedStudentsId.push(arrOfReservedStudents[0][key].id);
+    }
+    return arrOfReservedStudentsId;
+  };
 
-        const currUser = await this.findUserByEmail(email);
+  async getAllReservations() {
+    const allHrs = await User.createQueryBuilder('user')
+      .where('user.userType = :type', { type: UserType.HR })
+      .getMany();
 
-        if (!this.validateEmail(student.email)) {
-          results.studentsIgnored.push({
-            email: student.email,
-            reason: EMAIL_INVALID,
-          });
-        } else if (
-          Number(courseCompletion) < 0 ||
-          Number(courseCompletion) > 5
-        ) {
-          results.studentsIgnored.push({
-            email,
-            reason: COMPLETION_INVALID,
-          });
-        } else if (
-          Number(courseEngagement) < 0 ||
-          Number(courseEngagement) > 5
-        ) {
-          results.studentsIgnored.push({
-            email: email,
-            reason: ENGAGEMENT_INVALID,
-          });
-        } else if (Number(projectDegree) < 0 || Number(projectDegree) > 5) {
-          results.studentsIgnored.push({
-            email: email,
-            reason: PROJECT_DEGREE_INVALID,
-          });
-        } else if (
-          Number(teamProjectDegree) < 0 ||
-          Number(teamProjectDegree) > 5
-        ) {
-          results.studentsIgnored.push({
-            email: email,
-            reason: TEAM_PROJECT_DEGREE_INVALID,
-          });
-        } else if (currUser) {
-          if (!this.compareObjects(student, currUser)) {
-            await User.update(currUser.id, student);
-            results.studentsUpdated.push(email);
-          } else {
-            results.studentsIgnored.push({
-              email: email,
-              reason: NOTHING_TO_UPDATE,
-            });
-          }
-        } else {
-          const newStudent = new User();
-          newStudent.email = email;
-          newStudent.userType = UserType.STUDENT;
-          newStudent.courseCompletion = courseCompletion;
-          newStudent.courseEngagement = courseEngagement;
-          newStudent.projectDegree = projectDegree;
-          newStudent.teamProjectDegree = teamProjectDegree;
-          newStudent.bonusProjectUrls = bonusProjectUrls;
-          newStudent.token = Math.random().toString();
+    const reservedStudents = await HrReservations.createQueryBuilder(
+      'hr_reservations',
+    )
+      .innerJoinAndSelect('hr_reservations.studentId', 'id')
+      .getMany();
 
-          await newStudent.save();
-          results.studentsAdded.push(email);
+    const reservingHrs = await HrReservations.createQueryBuilder(
+      'hr_reservations',
+    )
+      .innerJoinAndSelect('hr_reservations.hrId', 'id')
+      .getMany();
 
-          // await this.mailService.sendMail(
-          //   newStudent.email,
-          //   `Nadaj hasło do aplikacji rekrutacja MegaK`,
-          //   `tu będzie trzeba wstawić treść wiadomości w html :)`,
-          // );
-          //
-          // const activate_Token = this.authService.generateToken(newStudent);
-        }
-      }),
+    const convertedSts = reservedStudents.map((el) => {
+      return { resId: el.id, student: el.studentId as unknown as User };
+    });
+
+    const convertedHrs = reservingHrs.map((el) => {
+      return { resId: el.id, hr: el.hrId as unknown as User };
+    });
+
+    const studentsList = reservedStudents.map(
+      (el) => el.studentId as unknown as User,
     );
 
-    return results;
+    const uniqueHrs = [
+      ...new Map(allHrs.map((item) => [item['id'], item])).values(),
+    ].map((hr) => {
+      return {
+        hr,
+        reservations: convertedHrs
+          .filter((res) => res.hr.id === hr.id)
+          .map((res) => res.resId),
+      };
+    });
+
+    const uniqueStudents = [
+      ...new Map(studentsList.map((item) => [item['id'], item])).values(),
+    ].map((student) => {
+      return {
+        student,
+        reservations: convertedSts
+          .filter((res) => res.student.id === student.id)
+          .map((res) => res.resId),
+      };
+    });
+
+    return { hrs: uniqueHrs, students: uniqueStudents };
   }
 
-  async createHr(hr: CreateNewHr): Promise<CreateHrResponse> {
-    if (!this.validateEmail(hr.email)) {
-      return {
-        statusCode: 404,
-        message: 'Invalid email',
-      };
+  async getStudentsBasicData(id, query: FilterDto): Promise<User[] | null> {
+    console.log(query);
+    const {
+      expectedContractType,
+      expectedTypeWork,
+      expectedSalaryFrom,
+      expectedSalaryTo,
+      courseCompletion,
+      courseEngagement,
+      monthsOfCommercialExp,
+      teamProjectDegree,
+      projectDegree,
+      canTakeApprenticeship,
+    } = query;
+
+    let queryResult = await User.createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.email',
+        'user.courseCompletion',
+        'user.courseEngagement',
+        'user.projectDegree',
+        'user.teamProjectDegree',
+        'user.expectedTypeWork',
+        'user.targetWorkCity',
+        'user.expectedContractType',
+        'user.expectedSalary',
+        'user.canTakeApprenticeship',
+        'user.monthsOfCommercialExp',
+        'user.firstName',
+        'user.lastName',
+        'user.status',
+        'user.active',
+      ])
+      .where('user.userType = :type', { type: UserType.STUDENT })
+      .andWhere('user.active = :active', { active: true })
+      .andWhere({ id: Not(In(await this.getReservedStudentsIds(id))) });
+    if (courseCompletion) {
+      queryResult = queryResult.andWhere(
+        'user.courseCompletion IN (:...courseCompletion)',
+        {
+          courseCompletion,
+        },
+      );
     }
-    if (await this.findUserByEmail(hr.email)) {
-      return {
-        statusCode: 404,
-        message: 'This email exist in our DB',
-      };
+    if (courseEngagement) {
+      queryResult = queryResult.andWhere(
+        'user.courseEngagement IN (:...courseEngagement)',
+        {
+          courseEngagement,
+        },
+      );
+    }
+    if (teamProjectDegree) {
+      queryResult = queryResult.andWhere(
+        'user.teamProjectDegree IN (:...teamProjectDegree)',
+        {
+          teamProjectDegree,
+        },
+      );
+    }
+    if (projectDegree) {
+      queryResult = queryResult.andWhere(
+        'user.projectDegree IN (:...projectDegree)',
+        {
+          projectDegree,
+        },
+      );
+    }
+    if (expectedTypeWork) {
+      queryResult = queryResult.andWhere(
+        'user.expectedTypeWork IN (:...expectedTypeWork)',
+        {
+          expectedTypeWork: expectedTypeWork.map((el) => WorkType[el]),
+        },
+      );
+    }
+    if (expectedContractType) {
+      console.log(query, expectedContractType);
+      queryResult = queryResult.andWhere(
+        'user.expectedContractType IN (:...expectedContractType)',
+        {
+          expectedContractType: expectedContractType.map(
+            (el) => ContractType[el],
+          ),
+        },
+      );
     }
 
-    const newHr = new User();
-    newHr.email = hr.email;
-    newHr.userType = UserType.HR;
-    newHr.company = hr.company;
-    newHr.firstName = hr.firstName;
-    newHr.lastName = hr.lastName;
-    newHr.maxReservedStudents = hr.maxReservedStudents;
-    newHr.token = Math.random().toString();
+    if (monthsOfCommercialExp) {
+      queryResult = queryResult.andWhere(
+        'user.monthsOfCommercialExp >= :monthsOfCommercialExp',
+        {
+          monthsOfCommercialExp,
+        },
+      );
+    }
 
-    await newHr.save();
-
-    await this.mailService.sendMail(
-      newHr.email,
-      `Nadaj hasło do aplikacji rekrutacja MegaK`,
-      `tu będzie trzeba wstawić treść wiadomości w html :)`,
-    );
-
-    this.authService.generateToken(newHr);
-
-    return {
-      statusCode: 201,
-      message: `New HR ${newHr.firstName} ${newHr.lastName} successfully created`,
-      hrId: newHr.id,
-    };
+    return await queryResult.getMany();
   }
 
   async protected() {
     return { message: 'Protected' };
+  }
+
+  async getReservedStudents(id): Promise<User[] | null> {
+    return await User.createQueryBuilder('user')
+      .select([
+        'user.id',
+        'user.email',
+        'user.courseCompletion',
+        'user.courseEngagement',
+        'user.projectDegree',
+        'user.teamProjectDegree',
+        'user.expectedTypeWork',
+        'user.targetWorkCity',
+        'user.expectedContractType',
+        'user.expectedSalary',
+        'user.canTakeApprenticeship',
+        'user.monthsOfCommercialExp',
+        'user.githubUsername',
+        'user.firstName',
+        'user.lastName',
+        'user.status',
+      ])
+      .where('user.userType = :type', { type: UserType.STUDENT })
+      .andWhere({ id: In(await this.getReservedStudentsIds(id)) })
+      .getMany();
+  }
+
+  async findUserById(id: string): Promise<User | null> {
+    return await User.findOneOrFail({ where: { id } });
+  }
+
+  async getReservedStudentsDate(id): Promise<HrReservations[] | null> {
+    const { hrId } = id;
+    return await HrReservations.createQueryBuilder('hr_reservations')
+      .innerJoinAndSelect('hr_reservations.studentId', 'id')
+      // .leftJoinAndSelect('hr_reservations.studentId', 'studentId')
+      .select(['hr_reservations.date', 'date'])
+      .where('hr_reservations.hrId = :hrId', { hrId: hrId })
+      .getMany();
   }
 }

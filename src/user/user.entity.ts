@@ -131,11 +131,11 @@ export class User extends BaseEntity {
   expectedContractType: ContractType | null;
 
   @Column({
+    type: 'smallint',
     nullable: true,
-    length: 5,
-    default: null,
+    default: 0,
   })
-  expectedSalary: string | null;
+  expectedSalary: number | null;
 
   @Column({
     nullable: false,
@@ -175,7 +175,7 @@ export class User extends BaseEntity {
     type: 'enum',
     nullable: true,
     enum: Status,
-    default: null,
+    default: Status.AVAILABLE,
   })
   status: Status | null;
 
@@ -191,6 +191,7 @@ export class User extends BaseEntity {
     default: null,
   })
   maxReservedStudents: number | null;
+
   @Column({
     nullable: false,
     type: 'boolean',
@@ -209,6 +210,12 @@ export class User extends BaseEntity {
     length: 255,
   })
   portfolioUrls: string;
+
+  @Column({
+    nullable: true,
+    length: 255,
+  })
+  teamProjectUrls: string;
 
   @OneToMany(() => HrReservations, (entity) => entity.hrId)
   bookingHr: HrReservations[];

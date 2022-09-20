@@ -7,20 +7,19 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { JWT_SECRET } from 'src/config/secrets';
+
 import { UserService } from '../../user/user.service';
-import { extractJwtFromQuery } from './extract-jwt-from-req-param';
+
+import { JWT_SECRET } from '../../config/secrets';
+import { extractJwtFromCookie } from './extract-jwt-from-cookie';
 
 @Injectable()
-export class JwtActiveAccountStrategy extends PassportStrategy(
-  Strategy,
-  'admin',
-) {
+export class JwtUserStrategy extends PassportStrategy(Strategy, 'user') {
   constructor(
     @Inject(forwardRef(() => UserService)) private userService: UserService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([extractJwtFromQuery]),
+      jwtFromRequest: ExtractJwt.fromExtractors([extractJwtFromCookie]),
       ignoreExpiration: false,
       secretOrKey: JWT_SECRET,
     });
@@ -29,21 +28,14 @@ export class JwtActiveAccountStrategy extends PassportStrategy(
   async validate(payload: {
     email: string;
     id: string;
-    token: string;
     iat: number;
     exp: number;
   }) {
     const user = await this.userService.findUserByEmail(payload.email);
-    if (user.active) {
-      throw new HttpException(
-        'Account is already active',
-        HttpStatus.FORBIDDEN,
-      );
+    if (user === null) {
+      throw new HttpException('Brak dostępu do zasobów', HttpStatus.FORBIDDEN);
     }
-    if (user.token !== payload.token) {
-      throw new HttpException('Token is wrong', HttpStatus.FORBIDDEN);
-    }
-
-    return payload;
+    const { password, token, ...rest } = user;
+    return rest;
   }
 }
